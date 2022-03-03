@@ -1,0 +1,7 @@
+* sit amet, consectetur  -> sit amet, consectetur Lorem ipsum
+* sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
+* sit amet, consectetur adipiscing elit, sed -> sit amet, consectetur adipiscings elit, sed
+* enim ad minim veniam, quis nostrud -> enim ad minim do veniam, quis nostrud
+* enim ad minim veniam -> enim ad minim Lorem veniam
+* veniam, quis nostrud -> veniam ipsum, quis nostrud
+* sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
