@@ -2,6 +2,7 @@ from docx import Document
 import xml.etree.ElementTree as ET
 import argparse
 import os
+import subprocess
 import pathlib
 import zipfile
 import tempfile
@@ -58,11 +59,18 @@ class DocxReviews:
     def __init__(self, file_docx):
         self.reviews = []
         self.file_docx = file_docx
-        # create copy file to extract docxZip and paragraphs
+        # extract docxZip and paragraphs
         temp_dir = tempfile.gettempdir()
         temp_path = os.path.join(temp_dir, 'temp_file_name')
-        shutil.copy2(file_docx, temp_path)
-        self.docxZip = zipfile.ZipFile(temp_path, "r")
+        # print(temp_path)
+        try:
+            shutil.copy(file_docx, temp_path)
+        except:
+            # at windows, shutil.copy fail if docx opened and only can be copied from powershell
+            if os.name == 'nt':
+                cmd = f"Copy-Item {file_docx} {temp_path}"
+                subprocess.run(["powershell", "-Command", cmd], capture_output=True)
+        self.docxZip = zipfile.ZipFile(temp_path, mode="r")
         self.paragraphs = Document(temp_path).paragraphs
 
     def reviews_append(self, text, verbose):
@@ -75,7 +83,7 @@ class DocxReviews:
     def parse(self, verbose):
         # comments
         if "'word/comments.xml'" in [member.filename for member in self.docxZip.infolist()]:
-            commentsXML = docxZip.read('word/comments.xml')
+            commentsXML = self.docxZip.read('word/comments.xml')
             root = ET.fromstring(commentsXML)
             comments = root.findall('.//w:comment', NS_MAP)
             if len(comments):
