@@ -1,20 +1,18 @@
 # docx_reviews_to_txt
 
-
 ## usage 
 
 ```txt
-$ python docx_reviews_to_txt.py -h
-usage: docx_reviews_to_txt.py [-h] [--save] [--dump_paragraphs_xml] docx
+$ python docx_reviews_to_txt.py  -h
+usage: docx_reviews_to_txt.py [-h] [--save_txt] [--save_xml] docx
 
 positional arguments:
-  docx                  input docx
+  docx        input docx
 
 options:
-  -h, --help            show this help message and exit
-  --save                save review as txt
-  --dump_paragraphs_xml
-                        save extracted paragraphs xml
+  -h, --help  show this help message and exit
+  --save_txt  save review as txt
+  --save_xml  save extracted paragraphs xml
 ```
   
 ## example
