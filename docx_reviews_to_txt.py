@@ -145,14 +145,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "docx", help="input docx", type=pathlib.Path)
     parser.add_argument(
-        '--save', help='save review as txt', action="store_true")
+        '--save_txt', help='save review as txt', action="store_true")
     parser.add_argument(
-        '--dump_paragraphs_xml', help='save extracted paragraphs xml', action="store_true")
+        '--save_p_xml', help='save extracted paragraphs xml', action="store_true")
     args = parser.parse_args()
     docx_reviews = DocxReviews(args.docx)
-    verbose = not args.dump_paragraphs_xml and not args.save
+    verbose = not args.save_p_xml and not args.save
     docx_reviews.parse(verbose)
-    if args.dump_paragraphs_xml:
+    if args.save_p_xml:
         docx_reviews.save_xml_p_elems()
     if args.save:
         docx_reviews.save_reviews_to_file()
