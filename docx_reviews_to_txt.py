@@ -150,9 +150,9 @@ if __name__ == "__main__":
         '--save_p_xml', help='save extracted paragraphs xml', action="store_true")
     args = parser.parse_args()
     docx_reviews = DocxReviews(args.docx)
-    verbose = not args.save_p_xml and not args.save
+    verbose = not args.save_p_xml and not args.save_txt
     docx_reviews.parse(verbose)
     if args.save_p_xml:
         docx_reviews.save_xml_p_elems()
-    if args.save:
+    if args.save_txt:
         docx_reviews.save_reviews_to_file()
