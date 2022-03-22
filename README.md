@@ -1,5 +1,7 @@
 # docx_reviews_to_txt
 
+Extract reviews changes and commentaries from a docx file as plan text.
+
 ## usage 
 
 ```txt
