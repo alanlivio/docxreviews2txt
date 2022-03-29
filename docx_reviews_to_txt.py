@@ -4,6 +4,7 @@ import argparse
 import os
 import subprocess
 import pathlib
+from os.path import exists
 import zipfile
 import tempfile
 import shutil
@@ -83,14 +84,17 @@ class DocxReviews:
 
     def parse(self, verbose):
         # comments
-        if "'word/comments.xml'" in [member.filename for member in self.docxZip.infolist()]:
+        if 'word/comments.xml' in [member.filename for member in self.docxZip.infolist()]:
             commentsXML = self.docxZip.read('word/comments.xml')
+            # print(commentsXML)
             root = ET.fromstring(commentsXML)
             comments = root.findall('.//w:comment', NS_MAP)
             if len(comments):
                 self.reviews_append("# Comments ", verbose)
-                for c in comments:
-                    self.reviews_append(str_t_elms(c), verbose)
+                for comment in comments:
+                    lines = comment.findall('.//w:r',NS_MAP)
+                    for line in lines:
+                            self.reviews_append(str_t_elms(line), verbose)
 
         # changes
         self.reviews_append("\n" if len(self.reviews) else "", verbose)
