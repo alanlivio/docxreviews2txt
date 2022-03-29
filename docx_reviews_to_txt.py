@@ -61,8 +61,9 @@ class DocxReviews:
         self.file_docx = file_docx
         # extract docxZip and paragraphs
         temp_dir = tempfile.gettempdir()
-        temp_path = os.path.join(temp_dir, 'temp_file_name')
-        # print(temp_path)
+        temp_path = os.path.join(temp_dir, 'docx_reviews_to_txt.docx')
+        if exists(temp_path):
+            os.remove(temp_path)
         try:
             shutil.copy(file_docx, temp_path)
         except:
