@@ -6,15 +6,15 @@ Extract reviews changes and commentaries from a docx file as plan text.
 
 ```txt
 $ python docx_reviews_to_txt.py  -h
-usage: docx_reviews_to_txt.py [-h] [--save_txt] [--save_xml] docx
+usage: docx_reviews_to_txt.py [-h] [--save_txt] [--save_p_xml] docx
 
 positional arguments:
-  docx        input docx
+  docx          input docx
 
 options:
-  -h, --help  show this help message and exit
-  --save_txt  save review as txt
-  --save_xml  save extracted paragraphs xml
+  -h, --help    show this help message and exit
+  --save_txt    save review as txt
+  --save_p_xml  save extracted paragraphs xml
 ```
   
 ## example

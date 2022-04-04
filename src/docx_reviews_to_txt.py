@@ -157,6 +157,9 @@ def main(argv):
         '--save_p_xml', help='save extracted paragraphs xml', action="store_true")
     args = parser.parse_args(argv)
     verbose = not args.save_p_xml and not args.save_txt
+    if not exists(args.docx):
+        print(f'{args.docx} does not exist')
+        return 1
     docx_reviews = DocxReviews(args.docx, verbose)
     docx_reviews.parse()
     if args.save_p_xml:
