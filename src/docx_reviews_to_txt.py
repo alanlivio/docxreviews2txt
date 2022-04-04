@@ -1,7 +1,9 @@
+#!/usr/bin/env python
 from docx import Document
 import xml.etree.ElementTree as ET
 import argparse
 import os
+import sys
 import subprocess
 import pathlib
 from os.path import exists
@@ -92,9 +94,9 @@ class DocxReviews:
             if len(comments):
                 self.reviews_append("# Comments ", verbose)
                 for comment in comments:
-                    lines = comment.findall('.//w:r',NS_MAP)
+                    lines = comment.findall('.//w:r', NS_MAP)
                     for line in lines:
-                            self.reviews_append(str_t_elms(line), verbose)
+                        self.reviews_append(str_t_elms(line), verbose)
 
         # changes
         self.reviews_append("\n" if len(self.reviews) else "", verbose)
@@ -145,7 +147,7 @@ class DocxReviews:
                 file.write(f"{xml}\n")
 
 
-if __name__ == "__main__":
+def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "docx", help="input docx", type=pathlib.Path)
@@ -153,7 +155,7 @@ if __name__ == "__main__":
         '--save_txt', help='save review as txt', action="store_true")
     parser.add_argument(
         '--save_p_xml', help='save extracted paragraphs xml', action="store_true")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     docx_reviews = DocxReviews(args.docx)
     verbose = not args.save_p_xml and not args.save_txt
     docx_reviews.parse(verbose)
@@ -161,3 +163,8 @@ if __name__ == "__main__":
         docx_reviews.save_xml_p_elems()
     if args.save_txt:
         docx_reviews.save_reviews_to_file()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

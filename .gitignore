@@ -128,3 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 lorem_ipsum_review.txt
+
+dist/
+**/*.egg-info/
