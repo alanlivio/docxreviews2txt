@@ -59,7 +59,8 @@ def str_right_t_elms(root_p, index):
 
 
 class DocxReviews:
-    def __init__(self, file_docx):
+    def __init__(self, file_docx, verbose):
+        self.verbose = verbose
         self.reviews = []
         self.file_docx = file_docx
         # extract docxZip and paragraphs
@@ -77,14 +78,14 @@ class DocxReviews:
         self.docxZip = zipfile.ZipFile(temp_path, mode="r")
         self.paragraphs = Document(temp_path).paragraphs
 
-    def reviews_append(self, text, verbose):
+    def reviews_append(self, text):
         if not len(text):
             return
         self.reviews.append(text)
-        if verbose:
+        if self.verbose:
             print(self.reviews[-1])
 
-    def parse(self, verbose):
+    def parse(self):
         # comments
         if 'word/comments.xml' in [member.filename for member in self.docxZip.infolist()]:
             commentsXML = self.docxZip.read('word/comments.xml')
@@ -92,14 +93,14 @@ class DocxReviews:
             root = ET.fromstring(commentsXML)
             comments = root.findall('.//w:comment', NS_MAP)
             if len(comments):
-                self.reviews_append("# Comments ", verbose)
+                self.reviews_append("# Comments")
                 for comment in comments:
                     lines = comment.findall('.//w:r', NS_MAP)
                     for line in lines:
-                        self.reviews_append(str_t_elms(line), verbose)
+                        self.reviews_append(str_t_elms(line))
 
         # changes
-        self.reviews_append("# Typos and rewriting suggestions ", verbose)
+        self.reviews_append("# Typos and rewriting suggestions")
         for p in self.paragraphs:
             xml = p._p.xml
             root = ET.fromstring(xml)
@@ -115,22 +116,22 @@ class DocxReviews:
                     ins_text = str_t_elms(next)
                     left_text = str_left_t_elms(root, index-1)
                     right_text = str_right_t_elms(root, index+2)
-                    self.reviews_append("* " + left_text + del_text + right_text +
-                                        " -> " + left_text + ins_text + right_text, verbose)
+                    self.reviews_append("- " + left_text + del_text + right_text +
+                                        " -> " + left_text + ins_text + right_text)
                 # INS alone
                 elif (cur.tag == ET_INS and prev.tag != ET_DEL):
                     ins_text = str_t_elms(cur)
                     left_text = str_left_t_elms(root, index-1)
                     right_text = str_right_t_elms(root, index)
-                    self.reviews_append("* " + left_text + right_text +
-                                        " -> " + left_text + ins_text + right_text, verbose)
+                    self.reviews_append("- " + left_text + right_text +
+                                        " -> " + left_text + ins_text + right_text)
                 # DEL alone
                 elif (cur.tag == ET_DEL and next.tag != ET_INS):
                     del_text = str_deltext_elms(cur)
                     left_text = str_left_t_elms(root, index-1)
                     right_text = str_right_t_elms(root, index+1)
-                    self.reviews_append("* " + left_text + del_text + right_text +
-                                        " -> " + left_text + right_text, verbose)
+                    self.reviews_append("- " + left_text + del_text + right_text +
+                                        " -> " + left_text + right_text)
 
     def save_reviews_to_file(self):
         file_txt_name = str(os.path.splitext(self.file_docx)[0])+'_review.txt'
@@ -155,9 +156,9 @@ def main(argv):
     parser.add_argument(
         '--save_p_xml', help='save extracted paragraphs xml', action="store_true")
     args = parser.parse_args(argv)
-    docx_reviews = DocxReviews(args.docx)
     verbose = not args.save_p_xml and not args.save_txt
-    docx_reviews.parse(verbose)
+    docx_reviews = DocxReviews(args.docx, verbose)
+    docx_reviews.parse()
     if args.save_p_xml:
         docx_reviews.save_xml_p_elems()
     if args.save_txt:
