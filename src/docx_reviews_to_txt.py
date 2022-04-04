@@ -99,7 +99,6 @@ class DocxReviews:
                         self.reviews_append(str_t_elms(line), verbose)
 
         # changes
-        self.reviews_append("\n" if len(self.reviews) else "", verbose)
         self.reviews_append("# Typos and rewriting suggestions ", verbose)
         for p in self.paragraphs:
             xml = p._p.xml
