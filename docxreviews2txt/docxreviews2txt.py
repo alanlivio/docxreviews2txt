@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from docx import Document
 import xml.etree.ElementTree as ET
 import argparse
@@ -154,7 +153,7 @@ def main(argv):
     parser.add_argument(
         '--save_txt', help='save review as txt', action="store_true")
     parser.add_argument(
-        '--save_p_xml', help='save extracted paragraphs xml', action="store_true")
+        '--save_p_xml', help='save extracted paragraphs xml for debugging', action="store_true")
     args = parser.parse_args(argv)
     verbose = not args.save_p_xml and not args.save_txt
     if not exists(args.docx):
@@ -167,7 +166,3 @@ def main(argv):
     if args.save_txt:
         docx_reviews.save_reviews_to_file()
     return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))

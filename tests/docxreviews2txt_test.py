@@ -1,4 +1,4 @@
-from src.docx_reviews_to_txt import main
+from docxreviews2txt.docxreviews2txt import main
 import unittest
 import io
 import contextlib
