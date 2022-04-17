@@ -1,2 +1,2 @@
-docx
-argparse
+docx>=0.2.4
+argparse>=1.4.0

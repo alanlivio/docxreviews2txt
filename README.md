@@ -1,12 +1,18 @@
-# docx_reviews_to_txt
+# docxreviews2txt
 
-Extract reviews changes and commentaries from a docx file as plan text.
+Extract reviews changes and comments from a docx file as plan text.
 
-## usage 
+## How to install? 
+
+```bash
+pip install docxreviews2txt
+```
+
+## How to use?
 
 ```txt
-$ python docx_reviews_to_txt.py  -h
-usage: docx_reviews_to_txt.py [-h] [--save_txt] [--save_p_xml] docx
+$ docxreviews2txt -h
+usage: docxreviews2txt [-h] [--save_txt] [--save_p_xml] docx
 
 positional arguments:
   docx          input docx
@@ -17,10 +23,12 @@ options:
   --save_p_xml  save extracted paragraphs xml
 ```
   
-## example
+Example:
 
 ```txt
-$ python docx_reviews_to_txt.py tests/lorem_ipsum.docx
+$ docxreviews2txt tests/lorem_ipsum.docx
+# comments
+- This is a comment from docx
 # Typos and rewriting suggestions
 - sit amet, consectetur  -> sit amet, consectetur Lorem ipsum
 - sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
@@ -30,4 +38,7 @@ $ python docx_reviews_to_txt.py tests/lorem_ipsum.docx
 - veniam, quis nostrud -> veniam ipsum, quis nostrud
 - sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
 ```
-  
+
+## References
+
+- https://github.com/ankushshah89/python-docx2txt

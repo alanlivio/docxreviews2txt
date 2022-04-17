@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+import docxreviews2txt
+import sys
+
+if __name__ == "__main__":
+    sys.exit(docxreviews2txt.main(sys.argv[1:]))
