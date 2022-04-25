@@ -12,7 +12,7 @@ pip install docxreviews2txt
 
 ```txt
 $ docxreviews2txt -h
-usage: docxreviews2txt [-h] [--save_txt] [--save_p_xml] docx
+usage: docxreviews2txt [-h] [--save_txt | --save_p_xml] docx
 
 positional arguments:
   docx          input docx
@@ -20,7 +20,7 @@ positional arguments:
 options:
   -h, --help    show this help message and exit
   --save_txt    save review as txt
-  --save_p_xml  save extracted paragraphs xml
+  --save_p_xml  save extracted paragraphs xml for debugging
 ```
   
 Example:
