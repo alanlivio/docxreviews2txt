@@ -148,12 +148,10 @@ class DocxReviews:
 
 def main(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "docx", help="input docx", type=pathlib.Path)
-    parser.add_argument(
-        '--save_txt', help='save review as txt', action="store_true")
-    parser.add_argument(
-        '--save_p_xml', help='save extracted paragraphs xml for debugging', action="store_true")
+    parser.add_argument("docx", help="input docx", type=pathlib.Path)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--save_txt', help='save review as txt', action="store_true")
+    group.add_argument('--save_p_xml', help='save extracted paragraphs xml for debugging', action="store_true")
     args = parser.parse_args(argv)
     verbose = not args.save_p_xml and not args.save_txt
     if not exists(args.docx):
