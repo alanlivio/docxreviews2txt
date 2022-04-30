@@ -2,7 +2,6 @@ from docx import Document
 import xml.etree.ElementTree as ET
 import argparse
 import os
-import sys
 import subprocess
 import pathlib
 from os.path import exists
@@ -10,6 +9,7 @@ import zipfile
 import tempfile
 import shutil
 
+__version__ = '0.3'
 
 WORD_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 NS_MAP = {"w": WORD_NS}
@@ -105,41 +105,41 @@ class DocxReviews:
             root = ET.fromstring(xml)
             if len(root.findall('.//w:del', NS_MAP)) == 0 and len(root.findall('.//w:ins', NS_MAP)) == 0:
                 continue
-            for index in range(len(root)-1):
-                prev = root[index-1]
+            for index in range(len(root) - 1):
+                prev = root[index - 1]
                 cur = root[index]
-                next = root[index+1]
+                next = root[index + 1]
                 # DEL followed by INS
                 if (cur.tag == ET_DEL and next.tag == ET_INS):
                     del_text = str_deltext_elms(cur)
                     ins_text = str_t_elms(next)
-                    left_text = str_left_t_elms(root, index-1)
-                    right_text = str_right_t_elms(root, index+2)
+                    left_text = str_left_t_elms(root, index - 1)
+                    right_text = str_right_t_elms(root, index + 2)
                     self.reviews_append("- " + left_text + del_text + right_text +
                                         " -> " + left_text + ins_text + right_text)
                 # INS alone
                 elif (cur.tag == ET_INS and prev.tag != ET_DEL):
                     ins_text = str_t_elms(cur)
-                    left_text = str_left_t_elms(root, index-1)
+                    left_text = str_left_t_elms(root, index - 1)
                     right_text = str_right_t_elms(root, index)
                     self.reviews_append("- " + left_text + right_text +
                                         " -> " + left_text + ins_text + right_text)
                 # DEL alone
                 elif (cur.tag == ET_DEL and next.tag != ET_INS):
                     del_text = str_deltext_elms(cur)
-                    left_text = str_left_t_elms(root, index-1)
-                    right_text = str_right_t_elms(root, index+1)
+                    left_text = str_left_t_elms(root, index - 1)
+                    right_text = str_right_t_elms(root, index + 1)
                     self.reviews_append("- " + left_text + del_text + right_text +
                                         " -> " + left_text + right_text)
 
     def save_reviews_to_file(self):
-        file_txt_name = str(os.path.splitext(self.file_docx)[0])+'_review.txt'
+        file_txt_name = str(os.path.splitext(self.file_docx)[0]) + '_review.txt'
         with open(file_txt_name, "w") as file:
             for change in self.reviews:
                 file.write(f"{change}\n")
 
     def save_xml_p_elems(self):
-        file_txt_name = str(os.path.splitext(self.file_docx)[0])+'.xml'
+        file_txt_name = str(os.path.splitext(self.file_docx)[0]) + '.xml'
         with open(file_txt_name, "w") as file:
             for p in self.paragraphs:
                 xml = p._p.xml
@@ -152,6 +152,7 @@ def main(argv):
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--save_txt', help='save review as txt', action="store_true")
     group.add_argument('--save_p_xml', help='save extracted paragraphs xml for debugging', action="store_true")
+    parser.add_argument('--version', help='show version', action='version', version='%(prog)s ' + __version__)
     args = parser.parse_args(argv)
     verbose = not args.save_p_xml and not args.save_txt
     if not exists(args.docx):
