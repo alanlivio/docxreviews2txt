@@ -1,9 +1,7 @@
 from docx import Document
 import xml.etree.ElementTree as ET
-import argparse
 import os
 import subprocess
-import pathlib
 from os.path import exists
 import zipfile
 import tempfile
@@ -144,24 +142,3 @@ class DocxReviews:
             for p in self.paragraphs:
                 xml = p._p.xml
                 file.write(f"{xml}\n")
-
-
-def main(argv):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("docx", help="input docx", type=pathlib.Path)
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('--save_txt', help='save review as txt', action="store_true")
-    group.add_argument('--save_p_xml', help='save extracted paragraphs xml for debugging', action="store_true")
-    parser.add_argument('--version', help='show version', action='version', version='%(prog)s ' + __version__)
-    args = parser.parse_args(argv)
-    verbose = not args.save_p_xml and not args.save_txt
-    if not exists(args.docx):
-        print(f'{args.docx} does not exist')
-        return 1
-    docx_reviews = DocxReviews(args.docx, verbose)
-    docx_reviews.parse()
-    if args.save_p_xml:
-        docx_reviews.save_xml_p_elems()
-    if args.save_txt:
-        docx_reviews.save_reviews_to_file()
-    return 0
