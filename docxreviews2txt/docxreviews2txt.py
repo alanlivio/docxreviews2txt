@@ -15,51 +15,15 @@ ET_WORD_NS = '{' + WORD_NS + '}'
 ET_TEXT = ET_WORD_NS + 't'
 ET_DEL = ET_WORD_NS + 'del'
 ET_INS = ET_WORD_NS + 'ins'
-MAX_LEN_LEFT = 4
-MAX_LEN_RIGHT = 3
-
-
-def str_deltext_elms(child):
-    x = [text.text for text in child.findall(
-        './/w:delText', NS_MAP)]
-    return "".join(x)
-
-
-def str_t_elms(child):
-    x = [text.text for text in child.findall(
-        './/w:t', NS_MAP)]
-    return "".join(x)
-
-
-def str_left_t_elms(root_p, index):
-    left_ar = []
-    for i in range(index, 0, -1):
-        if (root_p[i].tag == ET_INS):
-            continue
-        left_ar = str_t_elms(root_p[i]).split(" ") + left_ar
-        if(len(left_ar) >= MAX_LEN_LEFT):
-            left_ar = left_ar[-MAX_LEN_LEFT:]
-        break
-    return " ".join(left_ar)
-
-
-def str_right_t_elms(root_p, index):
-    right_ar = []
-    for i in range(index, len(root_p)):
-        if (root_p[i].tag == ET_INS):
-            continue
-        right_ar = str_t_elms(root_p[i]).split(" ") + right_ar
-        if(len(right_ar) >= MAX_LEN_RIGHT):
-            right_ar = right_ar[:MAX_LEN_RIGHT]
-        break
-    return " ".join(right_ar)
+DEFAULT_WORDS_AROUND_CHANGE = 4
 
 
 class DocxReviews:
-    def __init__(self, file_docx, verbose):
+    def __init__(self, file_docx, verbose, words_around_change=DEFAULT_WORDS_AROUND_CHANGE):
         self.verbose = verbose
         self.reviews = []
         self.file_docx = file_docx
+        self.words_around_change = words_around_change
         # extract docxZip and paragraphs
         temp_dir = tempfile.gettempdir()
         temp_path = os.path.join(temp_dir, 'docx_reviews_to_txt.docx')
@@ -74,6 +38,38 @@ class DocxReviews:
                 subprocess.run(["powershell", "-Command", cmd], capture_output=True)
         self.docxZip = zipfile.ZipFile(temp_path, mode="r")
         self.paragraphs = Document(temp_path).paragraphs
+
+    def str_deltext_elms(self, child):
+        x = [text.text for text in child.findall(
+            './/w:delText', NS_MAP)]
+        return "".join(x)
+
+    def str_t_elms(self, child):
+        x = [text.text for text in child.findall(
+            './/w:t', NS_MAP)]
+        return "".join(x)
+
+    def str_left_t_elms(self, root_p, index):
+        left_ar = []
+        for i in range(index, 0, -1):
+            if (root_p[i].tag == ET_INS):
+                continue
+            left_ar = self.str_t_elms(root_p[i]).split(" ") + left_ar
+            if(len(left_ar) >= self.words_around_change):
+                left_ar = left_ar[-self.words_around_change:]
+            break
+        return " ".join(left_ar)
+
+    def str_right_t_elms(self, root_p, index):
+        right_ar = []
+        for i in range(index, len(root_p)):
+            if (root_p[i].tag == ET_INS):
+                continue
+            right_ar = self.str_t_elms(root_p[i]).split(" ") + right_ar
+            if(len(right_ar) >= self.words_around_change):
+                right_ar = right_ar[:self.words_around_change]
+            break
+        return " ".join(right_ar)
 
     def reviews_append(self, text):
         if not len(text):
@@ -94,7 +90,7 @@ class DocxReviews:
                 for comment in comments:
                     lines = comment.findall('.//w:r', NS_MAP)
                     for line in lines:
-                        self.reviews_append(str_t_elms(line))
+                        self.reviews_append(self.str_t_elms(line))
 
         # changes
         self.reviews_append("# Typos and rewriting suggestions")
@@ -109,24 +105,24 @@ class DocxReviews:
                 next = root[index + 1]
                 # DEL followed by INS
                 if (cur.tag == ET_DEL and next.tag == ET_INS):
-                    del_text = str_deltext_elms(cur)
-                    ins_text = str_t_elms(next)
-                    left_text = str_left_t_elms(root, index - 1)
-                    right_text = str_right_t_elms(root, index + 2)
+                    del_text = self.str_deltext_elms(cur)
+                    ins_text = self.str_t_elms(next)
+                    left_text = self.str_left_t_elms(root, index - 1)
+                    right_text = self.str_right_t_elms(root, index + 2)
                     self.reviews_append("- " + left_text + del_text + right_text +
                                         " -> " + left_text + ins_text + right_text)
                 # INS alone
                 elif (cur.tag == ET_INS and prev.tag != ET_DEL):
-                    ins_text = str_t_elms(cur)
-                    left_text = str_left_t_elms(root, index - 1)
-                    right_text = str_right_t_elms(root, index)
+                    ins_text = self.str_t_elms(cur)
+                    left_text = self.str_left_t_elms(root, index - 1)
+                    right_text = self.str_right_t_elms(root, index)
                     self.reviews_append("- " + left_text + right_text +
                                         " -> " + left_text + ins_text + right_text)
                 # DEL alone
                 elif (cur.tag == ET_DEL and next.tag != ET_INS):
-                    del_text = str_deltext_elms(cur)
-                    left_text = str_left_t_elms(root, index - 1)
-                    right_text = str_right_t_elms(root, index + 1)
+                    del_text = self.str_deltext_elms(cur)
+                    left_text = self.str_left_t_elms(root, index - 1)
+                    right_text = self.str_right_t_elms(root, index + 1)
                     self.reviews_append("- " + left_text + del_text + right_text +
                                         " -> " + left_text + right_text)
 

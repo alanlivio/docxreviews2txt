@@ -2,7 +2,6 @@
 
 import docxreviews2txt
 import sys
-from docx import Document
 import argparse
 import pathlib
 from os.path import exists

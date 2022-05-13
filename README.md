@@ -1,6 +1,9 @@
 # docxreviews2txt
 
-Extract reviews changes and comments from a docx file as plan text.
+Extract reviews, changes and comments from a docx file as plan text.
+It is useful to review pdf files in Word. 
+You can convert pdf to docx using [pdf2docx](https://pypi.org/project/pdf2docx/) or Word itself. 
+
 
 ## How to install? 
 
@@ -39,6 +42,10 @@ $ docxreviews2txt tests/lorem_ipsum.docx
 - sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
 ```
 
-## References
+## Thanks
+
+This tool take inspiration from:
 
 - https://github.com/ankushshah89/python-docx2txt
+- https://stackoverflow.com/questions/47390928/extract-docx-comments
+- https://stackoverflow.com/questions/38247251/how-to-extract-text-inserted-with-track-changes-in-python-docx
