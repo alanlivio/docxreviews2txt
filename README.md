@@ -2,7 +2,7 @@
 
 Extract reviews, changes and comments from a docx file as plan text.
 It is useful to review pdf files in Word. 
-You can convert pdf to docx using [pdf2docx](https://pypi.org/project/pdf2docx/) or Word itself. 
+You can convert pdf to docx using Word itself or [pdf2docx](https://pypi.org/project/pdf2docx/). 
 
 
 ## How to install? 
@@ -41,6 +41,10 @@ $ docxreviews2txt tests/lorem_ipsum.docx
 - veniam, quis nostrud -> veniam ipsum, quis nostrud
 - sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
 ```
+
+## Known issues
+
+The tool fails in parse docx files with text organized in tables (e.g., pdf2docx convert collums to tables). 
 
 ## Thanks
 
