@@ -5,7 +5,7 @@ import docxreviews2txt
 
 
 class TestCase(unittest.TestCase):
-    def test_lorem_ipsum_docx(self):
+    def test_lorem_ipsum_docx(self) -> None:
         lorem_ipsum = [
             '# Typos and rewriting suggestions',
             '- sit amet, consectetur  -> sit amet, consectetur Lorem ipsum',
