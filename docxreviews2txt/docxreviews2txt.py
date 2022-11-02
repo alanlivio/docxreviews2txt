@@ -20,53 +20,56 @@ DEFAULT_WORDS_AROUND_CHANGE = 4
 
 class DocxReviews:
     def __init__(self, file_docx, verbose, words_around_change=DEFAULT_WORDS_AROUND_CHANGE) -> None:
+        assert (exists(file_docx))
         self.verbose = verbose
         self.reviews = []
         self.file_docx = file_docx
         self.words_around_change = words_around_change
         # extract docxZip and paragraphs
         temp_dir = tempfile.gettempdir()
-        temp_path = os.path.join(temp_dir, 'docx_reviews_to_txt.docx')
-        if exists(temp_path):
-            os.remove(temp_path)
+        temp_file = os.path.join(temp_dir, 'docx_reviews_to_txt.docx')
+        if exists(temp_file):
+            os.remove(temp_file)
+            assert (not exists(temp_file))
         try:
-            shutil.copy(file_docx, temp_path)
+            shutil.copy(file_docx, temp_file)
         except:
             # at windows, shutil.copy fail if docx opened and only can be copied from powershell
             if os.name == 'nt':
-                cmd = f"Copy-Item {file_docx} {temp_path}"
+                cmd = f"Copy-Item {file_docx} {temp_file}"
                 subprocess.run(["powershell", "-Command", cmd], capture_output=True)
-        self.docxZip = zipfile.ZipFile(temp_path, mode="r")
-        self.paragraphs = Document(temp_path).paragraphs
+        assert (exists(temp_file))
+        self.docxZip = zipfile.ZipFile(temp_file, mode="r")
+        self.paragraphs = Document(temp_file).paragraphs
 
-    def str_deltext_elms(self, child) ->str:
+    def str_deltext_elms(self, child) -> str:
         x = [text.text for text in child.findall(
             './/w:delText', NS_MAP)]
         return "".join(x)
 
-    def str_t_elms(self, child)->str:
+    def str_t_elms(self, child) -> str:
         x = [text.text for text in child.findall(
             './/w:t', NS_MAP)]
         return "".join(x)
 
-    def str_left_t_elms(self, root_p, index)->str:
+    def str_left_t_elms(self, root_p, index) -> str:
         left_ar = []
         for i in range(index, 0, -1):
             if (root_p[i].tag == ET_INS):
                 continue
             left_ar = self.str_t_elms(root_p[i]).split(" ") + left_ar
-            if(len(left_ar) >= self.words_around_change):
+            if (len(left_ar) >= self.words_around_change):
                 left_ar = left_ar[-self.words_around_change:]
             break
         return " ".join(left_ar)
 
-    def str_right_t_elms(self, root_p, index)->str:
+    def str_right_t_elms(self, root_p, index) -> str:
         right_ar = []
         for i in range(index, len(root_p)):
             if (root_p[i].tag == ET_INS):
                 continue
             right_ar = self.str_t_elms(root_p[i]).split(" ") + right_ar
-            if(len(right_ar) >= self.words_around_change):
+            if (len(right_ar) >= self.words_around_change):
                 right_ar = right_ar[:self.words_around_change]
             break
         return " ".join(right_ar)
@@ -126,13 +129,13 @@ class DocxReviews:
                     self.reviews_append("- " + left_text + del_text + right_text +
                                         " -> " + left_text + right_text)
 
-    def save_reviews_to_file(self):
+    def save_reviews_to_file(self) -> None:
         file_txt_name = str(os.path.splitext(self.file_docx)[0]) + '_review.txt'
         with open(file_txt_name, "w") as file:
             for change in self.reviews:
                 file.write(f"{change}\n")
 
-    def save_xml_p_elems(self):
+    def save_xml_p_elems(self) -> None:
         file_txt_name = str(os.path.splitext(self.file_docx)[0]) + '.xml'
         with open(file_txt_name, "w") as file:
             for p in self.paragraphs:
