@@ -1,0 +1,8 @@
+# Typos and rewriting suggestions
+- sit amet, consectetur  -> sit amet, consectetur Lorem ipsum
+- sit amet, consectetur adipiscing elit, sed do eiusmod -> sit amet, consectetur elit, sed do eiusmod
+- sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur adipiscings elit, sed do
+- enim ad minim veniam, quis nostrud exercitation -> enim ad minim do veniam, quis nostrud exercitation
+- enim ad minim veniam -> enim ad minim Lorem veniam
+- veniam, quis nostrud exercitation -> veniam ipsum, quis nostrud exercitation
+- sit amet, consectetur adipiscing elit, sed do eiusmod -> sit amet, consectetur elit, sed do eiusmod
