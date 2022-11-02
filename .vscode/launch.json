@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "docxreviews2txt",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/scripts/docxreviews2txt",
+            "env": {
+                "PYTHONPATH": "."
+            },
+            "args": [
+                "tests/lorem_ipsum.docx",
+                "--save_txt",
+                "--save_p_xml",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
