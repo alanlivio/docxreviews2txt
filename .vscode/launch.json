@@ -9,9 +9,6 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/scripts/docxreviews2txt",
-            "env": {
-                "PYTHONPATH": "."
-            },
             "args": [
                 "tests/lorem_ipsum.docx",
                 "--save_txt",
