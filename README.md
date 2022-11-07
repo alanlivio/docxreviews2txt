@@ -1,7 +1,7 @@
 # docxreviews2txt
 
-Extract review changes and comments from a docx file as plan text.
-It is useful when reviewing a pdf files imported as Word. 
+Extract review changes and comments from a Docx file as plain text.
+It is useful when reviewing pdf files imported as Word. 
 
 ## How to install? 
 
@@ -9,7 +9,7 @@ It is useful when reviewing a pdf files imported as Word.
 pip install docxreviews2txt
 ```
 
-## How to use?
+## How to use it?
 
 ```txt
 $ docxreviews2txt -h
@@ -40,13 +40,20 @@ $ docxreviews2txt tests/lorem_ipsum.docx
 - sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
 ```
 
+## TODO
+
+- [ ] improve N words extractions for reviews changes and enable pass it as a param
+- [ ] organized extracted reviews by the input Docx headings
+- [ ] save txt as Docx to enable extended/edited
+- [ ] support drag-and-drop GUI
+
 ## Known issues
 
-The tool fails in parse docx files with text organized in tables (e.g., pdf2docx convert collums to tables). 
+The tool fails to parse Docx files with text organized in tables (e.g., pdf2docx converts columns to tables). 
 
 ## Thanks
 
-This tool take inspiration from:
+This tool takes inspiration from:
 
 - https://github.com/ankushshah89/python-docx2txt
 - https://stackoverflow.com/questions/47390928/extract-docx-comments
