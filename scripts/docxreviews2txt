@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
-import docxreviews2txt
-import sys
 import argparse
 import pathlib
+import sys
 from os.path import exists
 
+import docxreviews2txt
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Extract review changes and comments from a docx file as plain text.")
     parser.add_argument("docx", help="input docx", type=pathlib.Path)
     parser.add_argument('--save_txt', help='save review as txt', action="store_true")
     parser.add_argument('--save_p_xml', help='save extracted paragraphs xml for debugging', action="store_true")
