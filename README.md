@@ -12,22 +12,28 @@ pip install docxreviews2txt
 ## How to use it?
 
 ```txt
-$ docxreviews2txt -h
-usage: docxreviews2txt [-h] [--save_txt | --save_p_xml] docx
+usage: docxreviews2txt [-h] [--save_p_xml] [--version] docx
+
+Extract review changes and comments from a docx file as plain text.
 
 positional arguments:
   docx          input docx
 
-options:
+optional arguments:
   -h, --help    show this help message and exit
-  --save_txt    save review as txt
-  --save_p_xml  save extracted paragraphs xml for debugging
+  --save_p_xml  also save extracted Docx paragraphs as xml for debugging
+  --version     show version
 ```
   
 Example:
 
 ```txt
 $ docxreviews2txt tests/lorem_ipsum.docx
+txt reviews at file:///C:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
+```
+
+```txt
+$ cat c:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
 # comments
 - This is a comment from docx
 # Typos and rewriting suggestions
@@ -44,7 +50,7 @@ $ docxreviews2txt tests/lorem_ipsum.docx
 
 - [ ] improve N words extractions for reviews changes and enable pass it as a param
 - [ ] organized extracted reviews by the input Docx headings
-- [ ] save txt as Docx to enable extended/edited
+- [ ] save txt as Docx to enable editing
 - [ ] support drag-and-drop GUI
 
 ## Known issues
