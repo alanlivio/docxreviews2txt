@@ -15,35 +15,36 @@ XML_EXPECTED = "tests/lorem_ipsum_expected.xml"
 
 
 class TestCase(unittest.TestCase):
-    def test_lorem_ipsum_cli(self) -> None:
-        # redirect stdout  https://stackoverflow.com/questions/54824018/get-output-of-a-function-as-string
-        output = io.StringIO()
-        with contextlib.redirect_stdout(output):
-            docx_reviews = docxreviews2txt.DocxReviews(DOCX)
-            docx_reviews.save_xml_p_elems()
-            cli_l = output.getvalue().split('\n')[:-1]
-            cli_expected_l = [f'txt reviews at {pathlib.Path(abspath(TXT_OUT)).as_uri()}']
-            cli_expected_l = [f'xml paragraphs at {pathlib.Path(abspath(XML_OUT)).as_uri()}']
-            self.assertEqual(cli_l, cli_expected_l)
 
-    def test_lorem_ipsum_txt(self) -> None:
-        assert (exists(TXT_EXPECTED))
-        docx_reviews = docxreviews2txt.DocxReviews(DOCX)
-        docx_reviews.save_reviews_to_file()
-        assert (exists(TXT_OUT))
-        ouput_l = io.open(TXT_OUT).read().splitlines()
-        expected_l = io.open(TXT_EXPECTED).read().splitlines()
-        self.assertEqual(ouput_l, expected_l)
+  def test_lorem_ipsum_cli(self) -> None:
+    # redirect stdout  https://stackoverflow.com/questions/54824018/get-output-of-a-function-as-string
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+      docx_reviews = docxreviews2txt.DocxReviews(DOCX)
+      docx_reviews.save_xml_p_elems()
+      cli_l = output.getvalue().split('\n')[:-1]
+      cli_expected_l = [f'txt reviews at {pathlib.Path(abspath(TXT_OUT)).as_uri()}']
+      cli_expected_l = [f'xml paragraphs at {pathlib.Path(abspath(XML_OUT)).as_uri()}']
+      self.assertEqual(cli_l, cli_expected_l)
 
-    def test_lorem_ipsum_p_xml(self) -> None:
-        assert (exists(XML_EXPECTED))
-        docx_reviews = docxreviews2txt.DocxReviews(DOCX)
-        docx_reviews.save_xml_p_elems()
-        assert (exists(XML_OUT))
-        ouput_l = io.open(XML_OUT).read().splitlines()
-        expected_l = io.open(XML_EXPECTED).read().splitlines()
-        self.assertEqual(ouput_l, expected_l)
+  def test_lorem_ipsum_txt(self) -> None:
+    assert (exists(TXT_EXPECTED))
+    docx_reviews = docxreviews2txt.DocxReviews(DOCX)
+    docx_reviews.save_reviews_to_file()
+    assert (exists(TXT_OUT))
+    ouput_l = io.open(TXT_OUT).read().splitlines()
+    expected_l = io.open(TXT_EXPECTED).read().splitlines()
+    self.assertEqual(ouput_l, expected_l)
+
+  def test_lorem_ipsum_p_xml(self) -> None:
+    assert (exists(XML_EXPECTED))
+    docx_reviews = docxreviews2txt.DocxReviews(DOCX)
+    docx_reviews.save_xml_p_elems()
+    assert (exists(XML_OUT))
+    ouput_l = io.open(XML_OUT).read().splitlines()
+    expected_l = io.open(XML_EXPECTED).read().splitlines()
+    self.assertEqual(ouput_l, expected_l)
 
 
 if __name__ == '__main__':
-    unittest.main()
+  unittest.main()
