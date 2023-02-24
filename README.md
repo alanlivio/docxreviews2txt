@@ -1,9 +1,9 @@
 # docxreviews2txt
 
-Extract review changes and comments from a Docx file as plain text.
-It is useful when reviewing pdf files imported as Word. 
+Command line tool to extract review changes and comments from a docx file as plain text.
+It is particullary usefull after do review changes in pdf files at docx editor (e.g., MS Word, gdocs).
 
-## How to install? 
+## How to install?
 
 ```bash
 pip install docxreviews2txt
@@ -24,7 +24,7 @@ optional arguments:
   --save_p_xml  also save extracted Docx paragraphs as xml for debugging
   --version     show version
 ```
-  
+
 Example:
 
 ```txt
@@ -55,7 +55,7 @@ $ cat c:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
 
 ## Known issues
 
-The tool fails to parse Docx files with text organized in tables (e.g., pdf2docx converts columns to tables). 
+The tool fails to parse Docx files with text organized in tables (e.g., pdf2docx converts columns to tables).
 
 ## Thanks
 

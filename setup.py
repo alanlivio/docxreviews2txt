@@ -25,6 +25,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3", ],
     author_email="alanlivio@gmail.com",
-    description="Extract reviews changes and commentaries from a docx file as plan text.",
+    description="Command line tool to extract review changes and comments from a docx file as plain text.",
     scripts=['scripts/docxreviews2txt'],
 )
