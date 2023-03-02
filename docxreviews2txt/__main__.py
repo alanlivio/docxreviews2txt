@@ -6,8 +6,10 @@ import sys
 
 import docxreviews2txt
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Extract review changes and comments from a docx file as plain text.")
+
+def main()  -> None:
+    parser = argparse.ArgumentParser(prog='docxreviews2txt',
+        description="Extract review changes and comments from a docx file as plain text.")
     parser.add_argument("docx", help="input docx", type=pathlib.Path)
     parser.add_argument('--save_p_xml', help='also save extracted Docx paragraphs as xml for debugging', action="store_true")
     parser.add_argument('--version', help='show version', action='version',
@@ -18,4 +20,6 @@ if __name__ == "__main__":
     docx_reviews.save_reviews_to_file()
     if args.save_p_xml:
         docx_reviews.save_xml_p_elems()
-    exit()
+
+if __name__ == "__main__":
+    main()
