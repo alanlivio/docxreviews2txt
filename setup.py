@@ -26,5 +26,9 @@ setuptools.setup(
         "Programming Language :: Python :: 3", ],
     author_email="alanlivio@gmail.com",
     description="Command line tool to extract review changes and comments from a docx file as plain text.",
-    scripts=['scripts/docxreviews2txt'],
+    entry_points = {
+        "console_scripts": [
+            "docxreviews2txt = docxreviews2txt.__main__:main",
+        ]
+    }
 )
