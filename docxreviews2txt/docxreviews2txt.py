@@ -24,7 +24,7 @@ DEFAULT_WORDS_AROUND_CHANGE = 4
 class DocxReviews:
 
   def __init__(self, file_docx, words_around_change=DEFAULT_WORDS_AROUND_CHANGE) -> None:
-    assert (exists(file_docx))
+    assert exists(file_docx)
     self.reviews = []
     self.file_docx = abspath(file_docx)
     self.words_around_change = words_around_change
@@ -33,7 +33,7 @@ class DocxReviews:
     temp_file = join(temp_dir, 'docx_reviews_to_txt.docx')
     if exists(temp_file):
       os.remove(temp_file)
-      assert (not exists(temp_file))
+      assert not exists(temp_file)
     try:
       shutil.copyfile(file_docx, temp_file)
     except Exception as exc:
@@ -58,10 +58,10 @@ class DocxReviews:
   def _str_left_t_elms(self, root_p, index) -> str:
     left_ar = []
     for i in range(index, 0, -1):
-      if (root_p[i].tag == ET_INS):
+      if root_p[i].tag == ET_INS:
         continue
       left_ar = self._str_t_elms(root_p[i]).split(" ") + left_ar
-      if (len(left_ar) >= self.words_around_change):
+      if len(left_ar) >= self.words_around_change:
         left_ar = left_ar[-self.words_around_change:]
       break
     return " ".join(left_ar)
@@ -69,16 +69,16 @@ class DocxReviews:
   def _str_right_t_elms(self, root_p, index) -> str:
     right_ar = []
     for i in range(index, len(root_p)):
-      if (root_p[i].tag == ET_INS):
+      if root_p[i].tag == ET_INS:
         continue
       right_ar = self._str_t_elms(root_p[i]).split(" ") + right_ar
-      if (len(right_ar) >= self.words_around_change):
+      if len(right_ar) >= self.words_around_change:
         right_ar = right_ar[:self.words_around_change]
       break
     return " ".join(right_ar)
 
   def _reviews_append(self, text) -> None:
-    if not len(text):
+    if len(text) == 0:
       return
     self.reviews.append(text)
 
@@ -104,34 +104,34 @@ class DocxReviews:
       if len(root.findall('.//w:del', NS_MAP)) == 0 and len(root.findall('.//w:ins', NS_MAP)) == 0:
         continue
       for index in range(len(root) - 1):
-        prev = root[index - 1]
-        cur = root[index]
-        next = root[index + 1]
+        prev_w = root[index - 1]
+        cur_w = root[index]
+        next_w = root[index + 1]
         # DEL followed by INS
-        if (cur.tag == ET_DEL and next.tag == ET_INS):
-          del_text = self._str_deltext_elms(cur)
-          ins_text = self._str_t_elms(next)
+        if cur_w.tag == ET_DEL and next_w.tag == ET_INS:
+          del_text = self._str_deltext_elms(cur_w)
+          ins_text = self._str_t_elms(next_w)
           left_text = self._str_left_t_elms(root, index - 1)
           right_text = self._str_right_t_elms(root, index + 2)
           self._reviews_append("- " + left_text + del_text + right_text + " -> " + left_text +
                                ins_text + right_text)
         # INS alone
-        elif (cur.tag == ET_INS and prev.tag != ET_DEL):
-          ins_text = self._str_t_elms(cur)
+        elif cur_w.tag == ET_INS and prev_w.tag != ET_DEL:
+          ins_text = self._str_t_elms(cur_w)
           left_text = self._str_left_t_elms(root, index - 1)
           right_text = self._str_right_t_elms(root, index)
           self._reviews_append("- " + left_text + right_text + " -> " + left_text + ins_text +
                                right_text)
         # DEL alone
-        elif (cur.tag == ET_DEL and next.tag != ET_INS):
-          del_text = self._str_deltext_elms(cur)
+        elif cur_w.tag == ET_DEL and next_w.tag != ET_INS:
+          del_text = self._str_deltext_elms(cur_w)
           left_text = self._str_left_t_elms(root, index - 1)
           right_text = self._str_right_t_elms(root, index + 1)
           self._reviews_append("- " + left_text + del_text + right_text + " -> " + left_text +
                                right_text)
 
   def save_reviews_to_file(self) -> None:
-    if (not self.reviews):
+    if not self.reviews:
       self._parse()
     filename = splitext(self.file_docx)[0] + '_review.txt'
     with open(filename, "w") as file:
