@@ -15,7 +15,7 @@ __version__ = '0.3'
 WORD_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 NS_MAP = {"w": WORD_NS}
 ET_WORD_NS = '{' + WORD_NS + '}'
-ET_TEXT = ET_WORD_NS + 't'
+ET_TXT = ET_WORD_NS + 't'
 ET_DEL = ET_WORD_NS + 'del'
 ET_INS = ET_WORD_NS + 'ins'
 DEFAULT_WORDS_AROUND_CHANGE = 4
@@ -28,24 +28,22 @@ class DocxReviews:
     self.reviews = []
     self.file_docx = abspath(file_docx)
     self.words_around_change = words_around_change
-    # extract docxZip and paragraphs
-    temp_dir = tempfile.gettempdir()
-    temp_file = join(temp_dir, 'docx_reviews_to_txt.docx')
-    if exists(temp_file):
-      os.remove(temp_file)
-      assert not exists(temp_file)
+    # use tmp file
+    self.target_file = join(tempfile.gettempdir(), 'docx_reviews_to_txt.docx')
+    if exists(self.target_file):
+      os.remove(self.target_file)
+      assert not exists(self.target_file)
     try:
-      shutil.copyfile(file_docx, temp_file)
+      shutil.copyfile(file_docx, self.target_file)
     except Exception as exc:
       # at windows, shutil.copy fail if docx opened and only can be copied from powershell
       if os.name == 'nt':
-        cmd = f"Copy-Item {file_docx} {temp_file}"
+        cmd = f"Copy-Item {file_docx} {self.target_file}"
         subprocess.run(["powershell", "-Command", cmd], capture_output=True, check=True)
       else:
         raise exc
-    assert exists(temp_file)
-    self.docxZip = zipfile.ZipFile(temp_file, mode="r")
-    self.paragraphs = Document(temp_file).paragraphs
+    assert exists(self.target_file)
+    self.paragraphs = Document(self.target_file).paragraphs
 
   def _str_deltext_elms(self, child) -> str:
     x = [text.text for text in child.findall('.//w:delText', NS_MAP)]
@@ -77,31 +75,32 @@ class DocxReviews:
       break
     return " ".join(right_ar)
 
-  def _reviews_append(self, text) -> None:
+  def _append(self, text) -> None:
     if len(text) == 0:
       return
     self.reviews.append(text)
 
   def _parse(self) -> None:
     # comments
-    if 'word/comments.xml' in [member.filename for member in self.docxZip.infolist()]:
-      commentsXML = self.docxZip.read('word/comments.xml')
-      # print(commentsXML)
-      root = ET.fromstring(commentsXML)
-      comments = root.findall('.//w:comment', NS_MAP)
-      if len(comments):
-        self._reviews_append("# Comments")
-        for comment in comments:
-          lines = comment.findall('.//w:r', NS_MAP)
-          for line in lines:
-            self._reviews_append(self._str_t_elms(line))
+    with zipfile.ZipFile(self.target_file, mode="r") as docxZip:
+      if 'word/comments.xml' in [member.filename for member in docxZip.infolist()]:
+        commentsXML = docxZip.read('word/comments.xml')
+        root = ET.fromstring(commentsXML)
+        comments = root.findall('.//w:comment', NS_MAP)
+        if len(comments):
+          self._append("# Comments")
+          for comment in comments:
+            lines = comment.findall('.//w:r', NS_MAP)
+            for line in lines:
+              self._append(self._str_t_elms(line))
 
     # changes
-    self._reviews_append("# Typos and rewriting suggestions")
+    self._append("# Typos and rewriting suggestions")
     for p in self.paragraphs:
       xml = p._p.xml
       root = ET.fromstring(xml)
-      if len(root.findall('.//w:del', NS_MAP)) == 0 and len(root.findall('.//w:ins', NS_MAP)) == 0:
+      if len(root.findall('.//w:del', NS_MAP)) == 0 \
+        and len(root.findall('.//w:ins', NS_MAP)) == 0:
         continue
       for index in range(len(root) - 1):
         prev_w = root[index - 1]
@@ -109,26 +108,24 @@ class DocxReviews:
         next_w = root[index + 1]
         # DEL followed by INS
         if cur_w.tag == ET_DEL and next_w.tag == ET_INS:
-          del_text = self._str_deltext_elms(cur_w)
-          ins_text = self._str_t_elms(next_w)
-          left_text = self._str_left_t_elms(root, index - 1)
-          right_text = self._str_right_t_elms(root, index + 2)
-          self._reviews_append("- " + left_text + del_text + right_text + " -> " + left_text +
-                               ins_text + right_text)
+          del_txt = self._str_deltext_elms(cur_w)
+          ins_txt = self._str_t_elms(next_w)
+          left_txt = self._str_left_t_elms(root, index - 1)
+          right_txt = self._str_right_t_elms(root, index + 2)
+          self._append("- " + left_txt + del_txt + right_txt + " -> " + left_txt + ins_txt +
+                       right_txt)
         # INS alone
         elif cur_w.tag == ET_INS and prev_w.tag != ET_DEL:
-          ins_text = self._str_t_elms(cur_w)
-          left_text = self._str_left_t_elms(root, index - 1)
-          right_text = self._str_right_t_elms(root, index)
-          self._reviews_append("- " + left_text + right_text + " -> " + left_text + ins_text +
-                               right_text)
+          ins_txt = self._str_t_elms(cur_w)
+          left_txt = self._str_left_t_elms(root, index - 1)
+          right_txt = self._str_right_t_elms(root, index)
+          self._append("- " + left_txt + right_txt + " -> " + left_txt + ins_txt + right_txt)
         # DEL alone
         elif cur_w.tag == ET_DEL and next_w.tag != ET_INS:
-          del_text = self._str_deltext_elms(cur_w)
-          left_text = self._str_left_t_elms(root, index - 1)
-          right_text = self._str_right_t_elms(root, index + 1)
-          self._reviews_append("- " + left_text + del_text + right_text + " -> " + left_text +
-                               right_text)
+          del_txt = self._str_deltext_elms(cur_w)
+          left_txt = self._str_left_t_elms(root, index - 1)
+          right_txt = self._str_right_t_elms(root, index + 1)
+          self._append("- " + left_txt + del_txt + right_txt + " -> " + left_txt + right_txt)
 
   def save_reviews_to_file(self) -> None:
     if not self.reviews:
