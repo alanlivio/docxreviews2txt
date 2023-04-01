@@ -1,6 +1,5 @@
 import contextlib
-import io
-import os
+from io import StringIO, open
 import pathlib
 import unittest
 from os.path import abspath, exists, join
@@ -18,7 +17,7 @@ class TestCase(unittest.TestCase):
 
   def test_lorem_ipsum_cli(self) -> None:
     # redirect stdout  https://stackoverflow.com/questions/54824018/get-output-of-a-function-as-string
-    output = io.StringIO()
+    output = StringIO()
     with contextlib.redirect_stdout(output):
       docx_reviews = docxreviews2txt.DocxReviews(DOCX)
       docx_reviews.save_xml_p_elems()
@@ -28,21 +27,25 @@ class TestCase(unittest.TestCase):
       self.assertEqual(cli_l, cli_expected_l)
 
   def test_lorem_ipsum_txt(self) -> None:
-    assert (exists(TXT_EXPECTED))
+    assert exists(TXT_EXPECTED)
     docx_reviews = docxreviews2txt.DocxReviews(DOCX)
     docx_reviews.save_reviews_to_file()
-    assert (exists(TXT_OUT))
-    ouput_l = io.open(TXT_OUT).read().splitlines()
-    expected_l = io.open(TXT_EXPECTED).read().splitlines()
+    assert exists(TXT_OUT)
+    with open(TXT_OUT) as f:
+      ouput_l = f.read().splitlines()
+    with open(TXT_EXPECTED) as f:
+      expected_l = f.read().splitlines()
     self.assertEqual(ouput_l, expected_l)
 
   def test_lorem_ipsum_p_xml(self) -> None:
-    assert (exists(XML_EXPECTED))
+    assert exists(XML_EXPECTED)
     docx_reviews = docxreviews2txt.DocxReviews(DOCX)
     docx_reviews.save_xml_p_elems()
-    assert (exists(XML_OUT))
-    ouput_l = io.open(XML_OUT).read().splitlines()
-    expected_l = io.open(XML_EXPECTED).read().splitlines()
+    assert exists(XML_OUT)
+    with open(XML_OUT) as f:
+      ouput_l = f.read().splitlines()
+    with open(XML_EXPECTED) as f:
+      expected_l = f.read().splitlines()
     self.assertEqual(ouput_l, expected_l)
 
 
