@@ -55,11 +55,11 @@ $ cat c:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
 
 ## Known issues
 
-The tool fails to parse Docx files with text organized in tables (e.g., pdf2docx converts columns to tables).
+The tool fails to capture changes in Docx files with text organized in tables (e.g., pdf2docx converts columns to tables).
 
-## Thanks
+## References
 
-This tool takes inspiration from:
+This project takes inspiration from:
 
 - https://github.com/ankushshah89/python-docx2txt
 - https://stackoverflow.com/questions/47390928/extract-docx-comments
