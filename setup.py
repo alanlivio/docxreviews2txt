@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="docxreviews2txt",
-    version="0.3",
+    packages=['docxreviews2txt'],
     author="Alan Guedes",
     license='MIT',
     url="http://github.com/alanlivio/docxreviews2txt",
