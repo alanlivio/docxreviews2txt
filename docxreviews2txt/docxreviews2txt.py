@@ -1,4 +1,3 @@
-import logging
 import os
 import pathlib
 import shutil
@@ -18,16 +17,16 @@ ET_WORD_NS = '{' + WORD_NS + '}'
 ET_TXT = ET_WORD_NS + 't'
 ET_DEL = ET_WORD_NS + 'del'
 ET_INS = ET_WORD_NS + 'ins'
-DEFAULT_WORDS_AROUND_CHANGE = 4
+DEFAULT_NWORDS = 4
 
 
 class DocxReviews:
 
-  def __init__(self, file_docx, words_around_change=DEFAULT_WORDS_AROUND_CHANGE) -> None:
+  def __init__(self, file_docx, nwords=DEFAULT_NWORDS) -> None:
     assert exists(file_docx)
     self.reviews = []
     self.file_docx = abspath(file_docx)
-    self.words_around_change = words_around_change
+    self.nwords = nwords
     # use tmp file
     self.target_file = join(tempfile.gettempdir(), 'docx_reviews_to_txt.docx')
     if exists(self.target_file):
@@ -59,8 +58,8 @@ class DocxReviews:
       if root_p[i].tag == ET_INS:
         continue
       left_ar = self._str_t_elms(root_p[i]).split(" ") + left_ar
-      if len(left_ar) >= self.words_around_change:
-        left_ar = left_ar[-self.words_around_change:]
+      if len(left_ar) >= self.nwords:
+        left_ar = left_ar[-self.nwords:]
       break
     return " ".join(left_ar)
 
@@ -70,8 +69,8 @@ class DocxReviews:
       if root_p[i].tag == ET_INS:
         continue
       right_ar = self._str_t_elms(root_p[i]).split(" ") + right_ar
-      if len(right_ar) >= self.words_around_change:
-        right_ar = right_ar[:self.words_around_change]
+      if len(right_ar) >= self.nwords:
+        right_ar = right_ar[:self.nwords]
       break
     return " ".join(right_ar)
 
