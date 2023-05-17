@@ -57,6 +57,14 @@ $ cat c:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
 
 The tool fails to capture changes in Docx files with text organized in tables (e.g., pdf2docx converts columns to tables).
 
+## ChangeLog
+
+- v0.4: add __main__.py, rm --save_xml_p_elems, -nwords
+- v0.3: add --version
+- v0.2: add python module and unittests
+- v0.1: one-script intial version
+
+
 ## References
 
 This project takes inspiration from:
