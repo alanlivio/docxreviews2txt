@@ -1,4 +1,5 @@
 import setuptools
+from docxreviews2txt.docxreviews2txt import __version__
 
 with open('requirements.txt') as f:
   required = f.read().splitlines()
@@ -9,7 +10,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="docxreviews2txt",
     packages=['docxreviews2txt'],
-    version="0.4",
+    version=__version__,
     author="Alan Guedes",
     license='MIT',
     url="http://github.com/alanlivio/docxreviews2txt",
