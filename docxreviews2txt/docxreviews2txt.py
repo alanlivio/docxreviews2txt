@@ -148,7 +148,7 @@ class DocxReviews:
     print(f'xml paragraphs at {pathlib.Path(filename).as_uri()}')
 
 
-def docxreviews_cli() -> None:
+def docxreviews_cli(argv=None) -> None:
   parser = argparse.ArgumentParser(
       prog='docxreviews2txt',
       description="Extract review changes and comments from a docx file as plain text.")
@@ -162,7 +162,6 @@ def docxreviews_cli() -> None:
                       help='show version',
                       action='version',
                       version='%(prog)s ' + __version__)
-  argv = sys.argv[1:]
   args = parser.parse_args(argv)
   docx_reviews = DocxReviews(file_docx=args.docx, nwords=args.nwords)
   docx_reviews.save_reviews_to_file()

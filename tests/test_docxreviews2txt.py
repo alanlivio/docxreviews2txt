@@ -47,5 +47,17 @@ class TestCase(unittest.TestCase):
       expected_l = f.read().splitlines()
     self.assertEqual(ouput_l, expected_l)
 
-if __name__ == '__main__':
-  unittest.main()
+  def test_lorem_ipsum_docxreviews_cli(self) -> None:
+    output = StringIO()
+    with contextlib.redirect_stdout(output):
+      argv = [DOCX]
+      docxreviews2txt.docxreviews_cli(argv)
+      cli_l = output.getvalue().split('\n')[:-1]
+      cli_expected_l = [f'txt reviews at {pathlib.Path(abspath(TXT_OUT)).as_uri()}']
+      self.assertEqual(cli_l, cli_expected_l)
+    assert exists(TXT_OUT)
+    with open(TXT_OUT) as f:
+      ouput_l = f.read().splitlines()
+    with open(TXT_EXPECTED) as f:
+      expected_l = f.read().splitlines()
+    self.assertEqual(ouput_l, expected_l)
