@@ -1,4 +1,6 @@
 import os
+import argparse
+import sys
 import pathlib
 import shutil
 import subprocess
@@ -144,3 +146,23 @@ class DocxReviews:
         file.write(f"{xml}\n")
     assert filename
     print(f'xml paragraphs at {pathlib.Path(filename).as_uri()}')
+
+
+def docxreviews_cli() -> None:
+  parser = argparse.ArgumentParser(
+      prog='docxreviews2txt',
+      description="Extract review changes and comments from a docx file as plain text.")
+  parser.add_argument("docx", help="input docx", type=pathlib.Path)
+  parser.add_argument('-nwords',
+                      nargs='?',
+                      type=int,
+                      default=DEFAULT_NWORDS,
+                      help=f'words around each change (default: {DEFAULT_NWORDS})')
+  parser.add_argument('--version',
+                      help='show version',
+                      action='version',
+                      version='%(prog)s ' + __version__)
+  argv = sys.argv[1:]
+  args = parser.parse_args(argv)
+  docx_reviews = DocxReviews(file_docx=args.docx, nwords=args.nwords)
+  docx_reviews.save_reviews_to_file()
