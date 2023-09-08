@@ -12,7 +12,6 @@ TXT_EXPECTED = "tests/lorem_ipsum_expected.txt"
 XML_OUT = "tests/lorem_ipsum.xml"
 XML_EXPECTED = "tests/lorem_ipsum_expected.xml"
 
-
 class TestCase(unittest.TestCase):
     def test_lorem_ipsum_txt(self) -> None:
         assert exists(TXT_EXPECTED)
