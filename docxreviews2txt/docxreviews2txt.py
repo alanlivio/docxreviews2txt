@@ -20,7 +20,6 @@ ET_DEL = ET_WORD_NS + "del"
 ET_INS = ET_WORD_NS + "ins"
 DEFAULT_NWORDS = 4
 
-
 class DocxReviews:
     def __init__(self, file_docx, nwords=DEFAULT_NWORDS) -> None:
         assert exists(file_docx)
