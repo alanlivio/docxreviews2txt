@@ -1,12 +1,11 @@
 import os
-import argparse
-import pathlib
 import shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
 from os.path import abspath, exists, join, splitext
-
+import pathlib
+import argparse
 from docx import Document
 
 __version__ = "0.4.1"
@@ -15,16 +14,40 @@ WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
 ET_WORD_NS = "{" + WORD_NS + "}"
 ET_TXT = ET_WORD_NS + "t"
+ET_PPR = ET_WORD_NS + "pPr"
 ET_DEL = ET_WORD_NS + "del"
 ET_INS = ET_WORD_NS + "ins"
-DEFAULT_NWORDS = 4
+NWORDS_START = 4
+INS_BEGIN, INS_END, DEL_BEGIN, DEL_END = "<ins>", "</ins>", "<del>", "</del>"
+
+
+def get_deltext_s(child) -> str:
+    deltext_s = ""
+    for elem in child.findall(".//w:delText", NS_MAP):
+        deltext_s = deltext_s + elem.text
+    return deltext_s
+
+
+def get_text_s(child) -> str:
+    text_s = ""
+    for elem in child.findall(".//w:t", NS_MAP):
+        text_s = text_s + elem.text
+    return text_s
+
+
+def str_surround_ins(txt) -> str:
+    return INS_BEGIN + txt.strip() + INS_END
+
+
+def str_surround_del(txt) -> str:
+    return DEL_BEGIN + txt.strip() + DEL_END
+
 
 class DocxReviews:
-    def __init__(self, file_docx, nwords=DEFAULT_NWORDS) -> None:
+    def __init__(self, file_docx) -> None:
         assert exists(file_docx)
         self.reviews = []
         self.file_docx = abspath(file_docx)
-        self.nwords = nwords
         # use tmp file
         self.target_file = join(tempfile.gettempdir(), "docx_reviews_to_txt.docx")
         if exists(self.target_file):
@@ -42,87 +65,46 @@ class DocxReviews:
         assert exists(self.target_file)
         self.paragraphs = Document(self.target_file).paragraphs
 
-    def _str_deltext_elms(self, child) -> str:
-        x = [text.text for text in child.findall(".//w:delText", NS_MAP)]
-        return "".join(x)
-
-    def _str_t_elms(self, child) -> str:
-        x = [text.text for text in child.findall(".//w:t", NS_MAP)]
-        return "".join(x)
-
-    def _str_left_t_elms(self, root_p, index) -> str:
-        left_ar = []
-        for i in range(index, 0, -1):
-            if root_p[i].tag == ET_INS:
-                continue
-            left_ar = self._str_t_elms(root_p[i]).split(" ") + left_ar
-            if len(left_ar) >= self.nwords:
-                left_ar = left_ar[-self.nwords :]
-            break
-        return " ".join(left_ar)
-
-    def _str_right_t_elms(self, root_p, index) -> str:
-        right_ar = []
-        for i in range(index, len(root_p)):
-            if root_p[i].tag == ET_INS:
-                continue
-            right_ar = self._str_t_elms(root_p[i]).split(" ") + right_ar
-            if len(right_ar) >= self.nwords:
-                right_ar = right_ar[: self.nwords]
-            break
-        return " ".join(right_ar)
-
-    def _append(self, text) -> None:
-        if len(text) == 0:
-            return
-        self.reviews.append(text)
-
     def _parse(self) -> None:
-        self._append("# Typos and rewriting suggestions")
+        self.reviews.append("# Typos suggestions (using HTML tags <ins> and <del>)")
         for p in self.paragraphs:
-            xml = p._p.xml
-            root = ET.fromstring(xml)
-            if (
-                len(root.findall(".//w:del", NS_MAP)) == 0
-                and len(root.findall(".//w:ins", NS_MAP)) == 0
+            texts = []
+            root = ET.fromstring(p._p.xml)
+
+            # skip paragraph if no w:delText, w:ins, elems
+            if not len(root.findall(".//w:del", NS_MAP)) and not len(
+                root.findall(".//w:ins", NS_MAP)
             ):
                 continue
-            for index in range(len(root) - 1):
-                prev_w = root[index - 1]
-                cur_w = root[index]
-                next_w = root[index + 1]
-                # DEL followed by INS
-                if cur_w.tag == ET_DEL and next_w.tag == ET_INS:
-                    del_txt = self._str_deltext_elms(cur_w)
-                    ins_txt = self._str_t_elms(next_w)
-                    left_txt = self._str_left_t_elms(root, index - 1)
-                    right_txt = self._str_right_t_elms(root, index + 2)
-                    self._append(
-                        "- "
-                        + left_txt
-                        + del_txt
-                        + right_txt
-                        + " -> "
-                        + left_txt
-                        + ins_txt
-                        + right_txt
-                    )
-                # INS alone
-                elif cur_w.tag == ET_INS and prev_w.tag != ET_DEL:
-                    ins_txt = self._str_t_elms(cur_w)
-                    left_txt = self._str_left_t_elms(root, index - 1)
-                    right_txt = self._str_right_t_elms(root, index)
-                    self._append(
-                        "- " + left_txt + right_txt + " -> " + left_txt + ins_txt + right_txt
-                    )
-                # DEL alone
-                elif cur_w.tag == ET_DEL and next_w.tag != ET_INS:
-                    del_txt = self._str_deltext_elms(cur_w)
-                    left_txt = self._str_left_t_elms(root, index - 1)
-                    right_txt = self._str_right_t_elms(root, index + 1)
-                    self._append(
-                        "- " + left_txt + del_txt + right_txt + " -> " + left_txt + right_txt
-                    )
+
+            # short first elem to NWORDS if text
+            index = 1  # skip index 0 (ppr elem)
+            elem = root[index]
+            if not elem.tag == ET_DEL and not elem.tag == ET_INS:
+                text_s = get_text_s(elem)
+                text_s_as_ar = text_s.split()
+                if len(text_s_as_ar) > NWORDS_START:
+                    sufix = " " if text_s[-1] == " " else ""  # check ending with space
+                    texts.append(" ".join(text_s_as_ar[-NWORDS_START:]) + sufix)
+                else:
+                    texts.append(text_s)
+                # print(f"1:'{texts[0]}'")
+                index = 2
+
+            # find w:delText, w:ins, or text elems
+            for index in range(index, len(root) - 1):  # skip index 0 (ppr elem)
+                elem = root[index]
+                if elem.tag == ET_DEL:  # it is del elem
+                    result = str_surround_del(get_deltext_s(elem))
+                elif elem.tag == ET_INS:  # it is ins elem
+                    result = str_surround_ins(get_text_s(elem))
+                else:  # considerer only text
+                    result = get_text_s(elem)
+                # print(str(index) + ":'" + result + "'")
+                texts.append(result)
+
+            # add review line
+            self.reviews.append("- " + "".join(texts))
 
     def save_reviews_to_file(self) -> None:
         if not self.reviews:
@@ -151,15 +133,8 @@ def docxreviews_cli(argv=None) -> None:
     )
     parser.add_argument("docx", help="input docx", type=pathlib.Path)
     parser.add_argument(
-        "-nwords",
-        nargs="?",
-        type=int,
-        default=DEFAULT_NWORDS,
-        help=f"words around each change (default: {DEFAULT_NWORDS})",
-    )
-    parser.add_argument(
         "--version", help="show version", action="version", version="%(prog)s " + __version__
     )
     args = parser.parse_args(argv)
-    docx_reviews = DocxReviews(file_docx=args.docx, nwords=args.nwords)
+    docx_reviews = DocxReviews(file_docx=args.docx)
     docx_reviews.save_reviews_to_file()
