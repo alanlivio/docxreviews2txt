@@ -5,7 +5,6 @@ import shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
-import zipfile
 from os.path import abspath, exists, join, splitext
 
 from docx import Document
@@ -79,20 +78,6 @@ class DocxReviews:
         self.reviews.append(text)
 
     def _parse(self) -> None:
-        # comments
-        with zipfile.ZipFile(self.target_file, mode="r") as docxZip:
-            if "word/comments.xml" in [member.filename for member in docxZip.infolist()]:
-                commentsXML = docxZip.read("word/comments.xml")
-                root = ET.fromstring(commentsXML)
-                comments = root.findall(".//w:comment", NS_MAP)
-                if len(comments):
-                    self._append("# Comments")
-                    for comment in comments:
-                        lines = comment.findall(".//w:r", NS_MAP)
-                        for line in lines:
-                            self._append(self._str_t_elms(line))
-
-        # changes
         self._append("# Typos and rewriting suggestions")
         for p in self.paragraphs:
             xml = p._p.xml
