@@ -1,8 +1,5 @@
-# Typos and rewriting suggestions
-- sit amet, consectetur  -> sit amet, consectetur Lorem ipsum
-- sit amet, consectetur adipiscing elit, sed do eiusmod -> sit amet, consectetur elit, sed do eiusmod
-- sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur adipiscings elit, sed do
-- enim ad minim veniam, quis nostrud exercitation -> enim ad minim do veniam, quis nostrud exercitation
-- enim ad minim veniam -> enim ad minim Lorem veniam
-- veniam, quis nostrud exercitation -> veniam ipsum, quis nostrud exercitation
-- sit amet, consectetur adipiscing elit, sed do eiusmod -> sit amet, consectetur elit, sed do eiusmod
+# Typos suggestions (using HTML tags <ins> and <del>)
+- dolor sit amet, consectetur <ins>Lorem ipsum</ins><del>adipiscing</del>
+- sit amet, consectetur adipiscing<ins>s</ins> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim <ins>do</ins>
+- Ut enim ad minim <ins>Lorem</ins>veniam<ins>ipsum</ins>
+- dolor sit amet, consectetur <del>adipiscing</del>
