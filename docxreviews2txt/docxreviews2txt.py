@@ -8,7 +8,7 @@ import pathlib
 import argparse
 from docx import Document
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
