@@ -7,8 +7,7 @@ from os.path import abspath, exists, join, splitext
 import pathlib
 import argparse
 from docx import Document
-
-__version__ = "0.4.2"
+from . import __version__
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
