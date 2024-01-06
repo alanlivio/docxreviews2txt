@@ -4,7 +4,7 @@ import pathlib
 import unittest
 from os.path import abspath, exists, join
 
-import docxreviews2txt
+from docxreviews2txt.docxreviews2txt import DocxReviews, docxreviews_cli
 
 DOCX = join("tests", "lorem_ipsum.docx")
 TXT_OUT = "tests/lorem_ipsum_review.txt"
@@ -12,13 +12,14 @@ TXT_EXPECTED = "tests/lorem_ipsum_expected.txt"
 XML_OUT = "tests/lorem_ipsum.xml"
 XML_EXPECTED = "tests/lorem_ipsum_expected.xml"
 
+
 class TestCase(unittest.TestCase):
     def test_lorem_ipsum_txt(self) -> None:
         assert exists(TXT_EXPECTED)
-        docx_reviews = docxreviews2txt.DocxReviews(DOCX)
+        docx_reviews = DocxReviews(DOCX)
         output = StringIO()
         with contextlib.redirect_stdout(output):
-            docx_reviews.save_reviews_to_file()
+            docx_reviews.save_reviews()
             cli_l = output.getvalue().split("\n")[:-1]
             cli_expected_l = [f"txt reviews at {pathlib.Path(abspath(TXT_OUT)).as_uri()}"]
             self.assertEqual(cli_l, cli_expected_l)
@@ -31,7 +32,7 @@ class TestCase(unittest.TestCase):
 
     def test_lorem_ipsum_xml_p_elems(self) -> None:
         assert exists(XML_EXPECTED)
-        docx_reviews = docxreviews2txt.DocxReviews(DOCX)
+        docx_reviews = DocxReviews(DOCX)
         output = StringIO()
         with contextlib.redirect_stdout(output):
             docx_reviews.save_xml_p_elems()
@@ -49,7 +50,7 @@ class TestCase(unittest.TestCase):
         output = StringIO()
         with contextlib.redirect_stdout(output):
             argv = [DOCX]
-            docxreviews2txt.docxreviews_cli(argv)
+            docxreviews_cli(argv)
             cli_l = output.getvalue().split("\n")[:-1]
             cli_expected_l = [f"txt reviews at {pathlib.Path(abspath(TXT_OUT)).as_uri()}"]
             self.assertEqual(cli_l, cli_expected_l)
