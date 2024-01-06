@@ -1,7 +1,6 @@
 # docxreviews2txt
 
-Command line tool to extract review changes and comments from a docx file as plain text.
-It is particullary usefull after do review changes in pdf files at docx editor (e.g., MS Word, gdocs).
+Command line tool to extract review changes from a docx file as plain text. It is useful when reviewing a PDF file as docx, and you need to share the changes as plain text.
 
 ## How to install?
 
@@ -12,17 +11,16 @@ pip install docxreviews2txt
 ## How to use it?
 
 ```txt
-usage: docxreviews2txt [-h] [--save_p_xml] [--version] docx
+usage: docxreviews2txt [-h] [--version] docx
 
-Extract review changes and comments from a docx file as plain text.
+Command line tool to extract review changes from a docx file as plain text.
 
 positional arguments:
-  docx          input docx
+  docx        input docx
 
-optional arguments:
-  -h, --help    show this help message and exit
-  --save_p_xml  also save extracted Docx paragraphs as xml for debugging
-  --version     show version
+options:
+  -h, --help  show this help message and exit
+  --version   show version
 ```
 
 Example:
@@ -37,38 +35,22 @@ $ cat c:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
 # comments
 - This is a comment from docx
 # Typos and rewriting suggestions
-- sit amet, consectetur  -> sit amet, consectetur Lorem ipsum
-- sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
-- sit amet, consectetur adipiscing elit, sed -> sit amet, consectetur adipiscings elit, sed
-- enim ad minim veniam, quis nostrud -> enim ad minim do veniam, quis nostrud
-- enim ad minim veniam -> enim ad minim Lorem veniam
-- veniam, quis nostrud -> veniam ipsum, quis nostrud
-- sit amet, consectetur adipiscing elit, sed do -> sit amet, consectetur elit, sed do
+# Typos suggestions (using HTML tags <ins> and <del>)
+- dolor sit amet, consectetur <ins>Lorem ipsum</ins><del>adipiscing</del>
+- sit amet, consectetur adipiscing<ins>s</ins> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim <ins>do</ins>
+- Ut enim ad minim <ins>Lorem</ins>veniam<ins>ipsum</ins>
+- dolor sit amet, consectetur <del>adipiscing</del>
+
 ```
-
-## TODO
-
-- [ ] improve N words extractions for reviews changes and enable pass it as a param
-- [ ] organized extracted reviews by the input Docx headings
-- [ ] save txt as Docx to enable editing
-- [ ] support drag-and-drop GUI
 
 ## Known issues
 
 The tool fails to capture changes in Docx files with text organized in tables (e.g., pdf2docx converts columns to tables).
 
-## ChangeLog
-
-- v0.4: add __main__.py, rm --save_xml_p_elems, -nwords
-- v0.3: add --version
-- v0.2: add python module and unittests
-- v0.1: one-script intial version
-
-
 ## References
 
 This project takes inspiration from:
 
-- https://github.com/ankushshah89/python-docx2txt
-- https://stackoverflow.com/questions/47390928/extract-docx-comments
-- https://stackoverflow.com/questions/38247251/how-to-extract-text-inserted-with-track-changes-in-python-docx
+- <https://github.com/ankushshah89/python-docx2txt>
+- <https://stackoverflow.com/questions/47390928/extract-docx-comments>
+- <https://stackoverflow.com/questions/38247251/how-to-extract-text-inserted-with-track-changes-in-python-docx>
