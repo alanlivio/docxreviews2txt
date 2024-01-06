@@ -1,8 +1,38 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docxreviews2txt"
+authors = [{ name = "Alan Guedes", email = "alanlivio@outlook.com" }]
+description = "Command line tool to extract review changes from a docx file as plain text"
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["one", "two"]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Environment :: Console",
+    "Operating System :: Microsoft :: Windows",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+dependencies = ["python-docx", 'argparse']
+dynamic = ["version"]
+
+[project.scripts]
+docxreviews2txt = "docxreviews2txt.__main__:main"
+
+[tool.setuptools]
+packages = ["docxreviews2txt"]
+
+[tool.setuptools.dynamic]
+version = { attr = "docxreviews2txt.__version__" }
+
 [tool.isort]
 profile = "black"
 
 [tool.black]
 line-length = 100
-
-[build-system]
-requires = ["setuptools"]
