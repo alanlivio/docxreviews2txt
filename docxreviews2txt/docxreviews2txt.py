@@ -128,7 +128,7 @@ class DocxReviews:
 def docxreviews_cli(argv=None) -> None:
     parser = argparse.ArgumentParser(
         prog="docxreviews2txt",
-        description="Extract review changes from a docx file as plain text.",
+        description="Command line tool to extract review changes from a docx file as plain text",
     )
     parser.add_argument("docx", help="input docx", type=pathlib.Path)
     parser.add_argument(
