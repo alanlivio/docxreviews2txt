@@ -20,14 +20,14 @@ NWORDS_START = 4
 INS_BEGIN, INS_END, DEL_BEGIN, DEL_END = "<ins>", "</ins>", "<del>", "</del>"
 
 
-def get_deltext_s(child) -> str:
+def str_from_deltext_elems(child) -> str:
     deltext_s = ""
     for elem in child.findall(".//w:delText", NS_MAP):
         deltext_s = deltext_s + elem.text
     return deltext_s
 
 
-def get_text_s(child) -> str:
+def str_from_t_elems(child) -> str:
     text_s = ""
     for elem in child.findall(".//w:t", NS_MAP):
         text_s = text_s + elem.text
@@ -80,7 +80,7 @@ class DocxReviews:
             index = 1  # skip index 0 (ppr elem)
             elem = root[index]
             if not elem.tag == ET_DEL and not elem.tag == ET_INS:
-                text_s = get_text_s(elem)
+                text_s = str_from_t_elems(elem)
                 text_s_as_ar = text_s.split()
                 if len(text_s_as_ar) > NWORDS_START:
                     sufix = " " if text_s[-1] == " " else ""  # check ending with space
@@ -94,11 +94,11 @@ class DocxReviews:
             for index in range(index, len(root) - 1):  # skip index 0 (ppr elem)
                 elem = root[index]
                 if elem.tag == ET_DEL:  # it is del elem
-                    result = str_surround_del(get_deltext_s(elem))
+                    result = str_surround_del(str_from_deltext_elems(elem))
                 elif elem.tag == ET_INS:  # it is ins elem
-                    result = str_surround_ins(get_text_s(elem))
+                    result = str_surround_ins(str_from_t_elems(elem))
                 else:  # considerer only text
-                    result = get_text_s(elem)
+                    result = str_from_t_elems(elem)
                 # print(str(index) + ":'" + result + "'")
                 texts.append(result)
 
