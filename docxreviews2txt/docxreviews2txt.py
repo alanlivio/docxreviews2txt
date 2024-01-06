@@ -105,7 +105,7 @@ class DocxReviews:
             # add review line
             self.reviews.append("- " + "".join(texts))
 
-    def save_reviews_to_file(self) -> None:
+    def save_reviews(self) -> None:
         if not self.reviews:
             self._parse()
         filename = splitext(self.file_docx)[0] + "_review.txt"
@@ -136,4 +136,4 @@ def docxreviews_cli(argv=None) -> None:
     )
     args = parser.parse_args(argv)
     docx_reviews = DocxReviews(file_docx=args.docx)
-    docx_reviews.save_reviews_to_file()
+    docx_reviews.save_reviews()
