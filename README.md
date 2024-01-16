@@ -27,20 +27,16 @@ Example:
 
 ```txt
 $ docxreviews2txt tests/lorem_ipsum.docx
-txt reviews at file:///C:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
+txt reviews at file:///home/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
 ```
 
 ```txt
-$ cat c:/Users/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
-# comments
-- This is a comment from docx
-# Typos and rewriting suggestions
+$ cat /home/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
 # Typos suggestions (using HTML tags <ins> and <del>)
 - dolor sit amet, consectetur <ins>Lorem ipsum</ins><del>adipiscing</del>
 - sit amet, consectetur adipiscing<ins>s</ins> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim <ins>do</ins>
 - Ut enim ad minim <ins>Lorem</ins>veniam<ins>ipsum</ins>
 - dolor sit amet, consectetur <del>adipiscing</del>
-
 ```
 
 ## Known issues
