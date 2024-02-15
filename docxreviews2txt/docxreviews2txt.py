@@ -1,12 +1,14 @@
+import argparse
 import os
+import pathlib
 import shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
 from os.path import abspath, exists, join, splitext
-import pathlib
-import argparse
+
 from docx import Document
+
 from . import __version__
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -16,7 +18,7 @@ ET_TXT = ET_WORD_NS + "t"
 ET_PPR = ET_WORD_NS + "pPr"
 ET_DEL = ET_WORD_NS + "del"
 ET_INS = ET_WORD_NS + "ins"
-NWORDS_START = 4
+NWORDS_P_START = 4
 INS_BEGIN, INS_END, DEL_BEGIN, DEL_END = "<ins>", "</ins>", "<del>", "</del>"
 
 
@@ -76,15 +78,15 @@ class DocxReviews:
             ):
                 continue
 
-            # short first elem to NWORDS if text
+            # short first elem to NWORDS_P_START if text
             index = 1  # skip index 0 (ppr elem)
             elem = root[index]
             if not elem.tag == ET_DEL and not elem.tag == ET_INS:
                 text_s = str_from_t_elems(elem)
                 text_s_as_ar = text_s.split()
-                if len(text_s_as_ar) > NWORDS_START:
+                if len(text_s_as_ar) > NWORDS_P_START:
                     sufix = " " if text_s[-1] == " " else ""  # check ending with space
-                    texts.append(" ".join(text_s_as_ar[-NWORDS_START:]) + sufix)
+                    texts.append(" ".join(text_s_as_ar[-NWORDS_P_START:]) + sufix)
                 else:
                     texts.append(text_s)
                 # print(f"1:'{texts[0]}'")
