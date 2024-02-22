@@ -13,7 +13,7 @@ pip install docxreviews2txt
 ```txt
 usage: docxreviews2txt [-h] [--version] docx
 
-Command line tool to extract review changes from a docx file as plain text.
+Command line tool to extract review changes from a docx file as plain text with HTML tags <ins> and <del>.
 
 positional arguments:
   docx        input docx

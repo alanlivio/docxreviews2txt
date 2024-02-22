@@ -9,7 +9,7 @@ from os.path import abspath, exists, join, splitext
 
 from docx import Document
 
-from . import __version__
+from docxreviews2txt import __version__
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
@@ -130,7 +130,7 @@ class DocxReviews:
 def docxreviews_cli(argv=None) -> None:
     parser = argparse.ArgumentParser(
         prog="docxreviews2txt",
-        description="Command line tool to extract review changes from a docx file as plain text",
+        description="Command line tool to extract review changes from a docx file as plain text with HTML tags <ins> and <del>.",
     )
     parser.add_argument("docx", help="input docx", type=pathlib.Path)
     parser.add_argument(
