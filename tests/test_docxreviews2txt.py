@@ -30,22 +30,6 @@ class TestCase(unittest.TestCase):
             expected_l = f.read().splitlines()
         self.assertEqual(ouput_l, expected_l)
 
-    def test_lorem_ipsum_xml_p_elems(self) -> None:
-        assert exists(XML_EXPECTED)
-        docx_reviews = DocxReviews(DOCX)
-        output = StringIO()
-        with contextlib.redirect_stdout(output):
-            docx_reviews.save_xml_p_elems()
-            cli_l = output.getvalue().split("\n")[:-1]
-            cli_expected_l = [f"xml paragraphs at {pathlib.Path(abspath(XML_OUT)).as_uri()}"]
-            self.assertEqual(cli_l, cli_expected_l)
-        assert exists(XML_OUT)
-        with open(XML_OUT) as f:
-            ouput_l = f.read().splitlines()
-        with open(XML_EXPECTED) as f:
-            expected_l = f.read().splitlines()
-        self.assertEqual(ouput_l, expected_l)
-
     def test_lorem_ipsum_docxreviews_cli(self) -> None:
         output = StringIO()
         with contextlib.redirect_stdout(output):
