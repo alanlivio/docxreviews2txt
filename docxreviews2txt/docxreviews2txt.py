@@ -60,7 +60,7 @@ class DocxReviews:
             # at windows, shutil.copy fail if docx opened and only can be copied from powershell
             if os.name == "nt":
                 cmd = f"Copy-Item {file_docx} {self.target_file}"
-                subprocess.run(["powershell", "-Command", cmd], capture_output=True, check=True)
+                subprocess.run(["powershell", "-noprofile", "-Command", cmd], capture_output=True, check=True)
             else:
                 raise exc
         assert exists(self.target_file)
