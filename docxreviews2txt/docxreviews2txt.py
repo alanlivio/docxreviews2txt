@@ -67,7 +67,7 @@ class DocxReviews:
         self.paragraphs = Document(self.target_file).paragraphs
 
     def _parse(self) -> None:
-        self.reviews.append("# Typos suggestions (using HTML tags <ins> and <del>)")
+        self.reviews.append("Typos suggestions using HTML tags <ins> and <del>:")
         for p in self.paragraphs:
             texts = []
             root = ET.fromstring(p._p.xml)
@@ -130,7 +130,7 @@ class DocxReviews:
 def docxreviews_cli(argv=None) -> None:
     parser = argparse.ArgumentParser(
         prog="docxreviews2txt",
-        description="Command line tool to extract review changes from a docx file as plain text with HTML tags <ins> and <del>.",
+        description="Command line tool to extract review changes from a docx file as plain text using HTML tags <ins> and <del>.",
     )
     parser.add_argument("docx", help="input docx", type=pathlib.Path)
     parser.add_argument(

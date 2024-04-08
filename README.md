@@ -13,7 +13,7 @@ pip install docxreviews2txt
 ```txt
 usage: docxreviews2txt [-h] [--version] docx
 
-Command line tool to extract review changes from a docx file as plain text with HTML tags <ins> and <del>.
+Command line tool to extract review changes from a docx file as plain text using HTML tags <ins> and <del>.
 
 positional arguments:
   docx        input docx
@@ -32,7 +32,7 @@ txt reviews at file:///home/alan/src/docxreviews2txt/tests/lorem_ipsum_review.tx
 
 ```txt
 $ cat /home/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
-# Typos suggestions (using HTML tags <ins> and <del>)
+Typos suggestions using HTML tags <ins> and <del>:
 - dolor sit amet, consectetur <ins>Lorem ipsum</ins><del>adipiscing</del>
 - sit amet, consectetur adipiscing<ins>s</ins> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim <ins>do</ins>
 - Ut enim ad minim <ins>Lorem</ins>veniam<ins>ipsum</ins>
