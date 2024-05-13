@@ -18,7 +18,7 @@ ET_TXT = ET_WORD_NS + "t"
 ET_PPR = ET_WORD_NS + "pPr"
 ET_DEL = ET_WORD_NS + "del"
 ET_INS = ET_WORD_NS + "ins"
-NWORDS_P_START = 4
+NWORDS_AROUND = 4
 INS_BEGIN, INS_END, DEL_BEGIN, DEL_END = "<ins>", "</ins>", "<del>", "</del>"
 
 
@@ -69,7 +69,7 @@ class DocxReviews:
     def _parse(self) -> None:
         self.reviews.append("Typos suggestions using HTML tags <ins> and <del>:")
         for p in self.paragraphs:
-            texts = []
+            result = []
             root = ET.fromstring(p._p.xml)
 
             # skip paragraph if no w:delText, w:ins, elems
@@ -78,34 +78,38 @@ class DocxReviews:
             ):
                 continue
 
-            # short first elem to NWORDS_P_START if text
-            index = 1  # skip index 0 (ppr elem)
+            # skip index 0 (ppr elem)
+            index = 1  
             elem = root[index]
+            # get first NWORDS_AROUND text
             if not elem.tag == ET_DEL and not elem.tag == ET_INS:
                 text_s = str_from_t_elems(elem)
                 text_s_as_ar = text_s.split()
-                if len(text_s_as_ar) > NWORDS_P_START:
+                if len(text_s_as_ar) > NWORDS_AROUND:
                     sufix = " " if text_s[-1] == " " else ""  # check ending with space
-                    texts.append(" ".join(text_s_as_ar[-NWORDS_P_START:]) + sufix)
+                    result.append(" ".join(text_s_as_ar[-NWORDS_AROUND:]) + sufix)
                 else:
-                    texts.append(text_s)
-                # print(f"1:'{texts[0]}'")
+                    result.append(text_s)
                 index = 2
 
             # find w:delText, w:ins, or text elems
             for index in range(index, len(root) - 1):  # skip index 0 (ppr elem)
                 elem = root[index]
                 if elem.tag == ET_DEL:  # it is del elem
-                    result = str_surround_del(str_from_deltext_elems(elem))
+                    result.append(str_surround_del(str_from_deltext_elems(elem)))
                 elif elem.tag == ET_INS:  # it is ins elem
-                    result = str_surround_ins(str_from_t_elems(elem))
-                else:  # considerer only text
-                    result = str_from_t_elems(elem)
-                # print(str(index) + ":'" + result + "'")
-                texts.append(result)
-
-            # add review line
-            self.reviews.append("- " + "".join(texts))
+                    result.append(str_surround_ins(str_from_t_elems(elem)))
+                else:  
+                    # get following NWORDS_AROUND text
+                    text_s = str_from_t_elems(elem)
+                    text_s_as_ar = text_s.split()
+                    if len(text_s_as_ar) > NWORDS_AROUND:
+                        prefix = " " if text_s[0] == " " else ""  # check ending with space
+                        result.append(" ".join([prefix] + text_s_as_ar[:NWORDS_AROUND]))
+                    else:
+                        result.append(text_s)
+                self.reviews.append("- " + "".join(result))
+                result = []
 
     def save_reviews(self) -> None:
         if not self.reviews:
