@@ -1,5 +1,0 @@
-Typos suggestions using HTML tags <ins> and <del>:
-- dolor sit amet, consectetur <ins>Lorem ipsum</ins><del>adipiscing</del>
-- sit amet, consectetur adipiscing<ins>s</ins> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim <ins>do</ins>
-- Ut enim ad minim <ins>Lorem</ins>veniam<ins>ipsum</ins>
-- dolor sit amet, consectetur <del>adipiscing</del>

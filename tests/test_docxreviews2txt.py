@@ -2,45 +2,30 @@ import contextlib
 from io import StringIO, open
 import pathlib
 import unittest
+from os import listdir
 from os.path import abspath, exists, join
 
-from docxreviews2txt.docxreviews2txt import DocxReviews, docxreviews_cli
+from docxreviews2txt.docxreviews2txt import DocxReviews
 
-DOCX = join("tests", "lorem_ipsum.docx")
-TXT_OUT = "tests/lorem_ipsum_review.txt"
-TXT_EXPECTED = "tests/lorem_ipsum_expected.txt"
-XML_OUT = "tests/lorem_ipsum.xml"
-XML_EXPECTED = "tests/lorem_ipsum_expected.xml"
-
+TEST_FOLDER = "tests"
 
 class TestCase(unittest.TestCase):
-    def test_lorem_ipsum_txt(self) -> None:
-        assert exists(TXT_EXPECTED)
-        docx_reviews = DocxReviews(DOCX)
-        output = StringIO()
-        with contextlib.redirect_stdout(output):
-            docx_reviews.save_reviews()
-            cli_l = output.getvalue().split("\n")[:-1]
-            cli_expected_l = [f"txt reviews at {pathlib.Path(abspath(TXT_OUT)).as_uri()}"]
-            self.assertEqual(cli_l, cli_expected_l)
-        assert exists(TXT_OUT)
-        with open(TXT_OUT) as f:
-            ouput_l = f.read().splitlines()
-        with open(TXT_EXPECTED) as f:
-            expected_l = f.read().splitlines()
-        self.assertEqual(ouput_l, expected_l)
-
-    def test_lorem_ipsum_docxreviews_cli(self) -> None:
-        output = StringIO()
-        with contextlib.redirect_stdout(output):
-            argv = [DOCX]
-            docxreviews_cli(argv)
-            cli_l = output.getvalue().split("\n")[:-1]
-            cli_expected_l = [f"txt reviews at {pathlib.Path(abspath(TXT_OUT)).as_uri()}"]
-            self.assertEqual(cli_l, cli_expected_l)
-        assert exists(TXT_OUT)
-        with open(TXT_OUT) as f:
-            ouput_l = f.read().splitlines()
-        with open(TXT_EXPECTED) as f:
-            expected_l = f.read().splitlines()
-        self.assertEqual(ouput_l, expected_l)
+    def test_input_docx_files(self) -> None:
+        files = [join(TEST_FOLDER, file) for file in listdir(TEST_FOLDER) if file.endswith('.docx')]
+        for file in files:
+            txt_out = file.replace('.docx', '_review.txt')
+            txt_expected = file.replace('.docx', '_review_expected.txt')
+            assert exists(txt_expected)
+            docx_reviews = DocxReviews(file)
+            output = StringIO()
+            with contextlib.redirect_stdout(output):
+                docx_reviews.save_reviews()
+                cli_l = output.getvalue().split("\n")[:-1]
+                cli_expected_l = [f"txt reviews at {pathlib.Path(abspath(txt_out)).as_uri()}"]
+                self.assertEqual(cli_l, cli_expected_l)
+            assert exists(txt_out)
+            with open(txt_out) as f:
+                ouput_l = f.read().splitlines()
+            with open(txt_expected) as f:
+                expected_l = f.read().splitlines()
+            self.assertEqual(ouput_l, expected_l)

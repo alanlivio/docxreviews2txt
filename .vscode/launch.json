@@ -8,10 +8,10 @@
             "name": "docxreviews2txt",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/scripts/docxreviews2txt",
+            "module": "docxreviews2txt",
             "args": [
-                "tests/lorem_ipsum.docx",
-                "--save_p_xml",
+                // "tests/input_1.docx",
+                "tests/input_2.docx",
             ],
             "console": "integratedTerminal",
             "justMyCode": true

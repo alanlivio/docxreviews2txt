@@ -1,2 +1,2 @@
-__version__ = "0.4.5"
-from .docxreviews2txt import docxreviews_cli
+from docxreviews2txt.docxreviews2txt import __version__
+from docxreviews2txt.docxreviews2txt import docxreviews_cli

@@ -163,6 +163,7 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
-tests/lorem_ipsum_review.txt
-tests/lorem_ipsum.xml
+tests/*_review.txt
 typings/
+~$*
+tests/~$*

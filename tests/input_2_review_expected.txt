@@ -1,0 +1,5 @@
+Typos suggestions using HTML tags <ins> and <del>:
+- carried out <del>on </del><ins>w</ins><ins>hen</ins><ins> </ins>evaluating video quality in
+- the ethics commission of <ins>the </ins>University was obtained ahead
+- combinations with corresponding 95% <del>confident </del><ins>confidence </ins>intervals for each 
+- could then be optimize<ins>d for</ins> further video encoding. 

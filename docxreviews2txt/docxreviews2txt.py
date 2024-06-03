@@ -9,7 +9,7 @@ from os.path import abspath, exists, join, splitext
 
 from docx import Document
 
-from docxreviews2txt import __version__
+__version__ = "0.4.5"
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
@@ -37,12 +37,46 @@ def str_from_t_elems(child) -> str:
 
 
 def str_surround_ins(txt) -> str:
-    return INS_BEGIN + txt.strip() + INS_END
+    return INS_BEGIN + txt + INS_END
 
 
 def str_surround_del(txt) -> str:
-    return DEL_BEGIN + txt.strip() + DEL_END
+    return DEL_BEGIN + txt + DEL_END
 
+def _get_left_txt(root, index) -> str:
+    res = ""
+    while index > 0:
+        elem = root[index]
+        if elem.tag == ET_DEL or elem.tag == ET_INS:
+            break
+        text_s = str_from_t_elems(elem)
+        res = text_s + res
+        index =-1
+    return res
+
+def _get_right_txt(root, index, limit) -> tuple[str,bool]:
+    res = ""
+    change_ahead = False
+    while index < limit:
+        elem = root[index]
+        if elem.tag == ET_DEL or elem.tag == ET_INS:
+            change_ahead=True
+            break
+        text_s = str_from_t_elems(elem)
+        res = res + text_s
+        index +=1
+    return res,change_ahead
+
+def _get_tagged_change(root, index) -> str:
+    elem = root[index]
+    if elem.tag == ET_DEL:
+        string = str_from_deltext_elems(elem)
+        return str_surround_del(string) if string else ""
+    elif elem.tag == ET_INS:
+        string = str_from_t_elems(elem)
+        return str_surround_ins(string) if string else ""
+    else:
+        return "<error>"
 
 class DocxReviews:
     def __init__(self, file_docx) -> None:
@@ -66,50 +100,51 @@ class DocxReviews:
         assert exists(self.target_file)
         self.paragraphs = Document(self.target_file).paragraphs
 
+        
     def _parse(self) -> None:
         self.reviews.append("Typos suggestions using HTML tags <ins> and <del>:")
         for p in self.paragraphs:
-            result = []
             root = ET.fromstring(p._p.xml)
-
-            # skip paragraph if no w:delText, w:ins, elems
             if not len(root.findall(".//w:del", NS_MAP)) and not len(
                 root.findall(".//w:ins", NS_MAP)
             ):
                 continue
-
-            # skip index 0 (ppr elem)
-            index = 1  
-            elem = root[index]
-            # get first NWORDS_AROUND text
-            if not elem.tag == ET_DEL and not elem.tag == ET_INS:
-                text_s = str_from_t_elems(elem)
-                text_s_as_ar = text_s.split()
-                if len(text_s_as_ar) > NWORDS_AROUND:
-                    sufix = " " if text_s[-1] == " " else ""  # check ending with space
-                    result.append(" ".join(text_s_as_ar[-NWORDS_AROUND:]) + sufix)
-                else:
-                    result.append(text_s)
-                index = 2
-
-            # find w:delText, w:ins, or text elems
-            for index in range(index, len(root) - 1):  # skip index 0 (ppr elem)
-                elem = root[index]
-                if elem.tag == ET_DEL:  # it is del elem
-                    result.append(str_surround_del(str_from_deltext_elems(elem)))
-                elif elem.tag == ET_INS:  # it is ins elem
-                    result.append(str_surround_ins(str_from_t_elems(elem)))
-                else:  
-                    # get following NWORDS_AROUND text
-                    text_s = str_from_t_elems(elem)
-                    text_s_as_ar = text_s.split()
-                    if len(text_s_as_ar) > NWORDS_AROUND:
-                        prefix = " " if text_s[0] == " " else ""  # check ending with space
-                        result.append(" ".join([prefix] + text_s_as_ar[:NWORDS_AROUND]))
-                    else:
-                        result.append(text_s)
-                self.reviews.append("- " + "".join(result))
-                result = []
+            limit = len(root)
+            index = 0
+            left, right, result = "", "", ""
+            change_ahead = False
+            while index < limit: 
+                if root[index].tag == ET_DEL or root[index].tag == ET_INS:
+                    # if not consecutive change, save left txt and change on result
+                    if not change_ahead:
+                        left = _get_left_txt(root, index-1)
+                        if len(left.split()) > NWORDS_AROUND:
+                            left = " ".join(left.split()[-NWORDS_AROUND:]) + (" " if left[-1] == " " else "")
+                        result = left + result
+                    result = result + _get_tagged_change(root, index)
+                    # look ahead
+                    right, change_ahead = _get_right_txt(root, index+1, limit)
+                    right_len = len(right.split())
+                    # if change_ahead near, concatenate result
+                    if change_ahead and right_len < NWORDS_AROUND:
+                        index+=1
+                        continue
+                    # if change_ahead far, finish result
+                    elif change_ahead and right_len > NWORDS_AROUND:
+                        right = (" " if right[0] == " " else "") + " ".join(right.split()[:NWORDS_AROUND])
+                        result = result + right
+                        self.reviews.append("- " + result)
+                        left, right, result = "", "", ""
+                        change_ahead = False
+                    # if no change_ahead, finish result
+                    if not change_ahead and result:
+                        if right_len > NWORDS_AROUND:
+                            right = (" " if right[0] == " " else "") + " ".join(right.split()[:NWORDS_AROUND])
+                        result = result + right
+                        self.reviews.append("- " + result)
+                        left, right, result = "", "", ""
+                        change_ahead = False
+                index+=1
 
     def save_reviews(self) -> None:
         if not self.reviews:
