@@ -8,7 +8,7 @@ authors = [{ name = "Alan Guedes", email = "alanlivio@outlook.com" }]
 description = "Command line tool to extract review changes from a docx file as plain text"
 readme = "README.md"
 requires-python = ">=3.7"
-keywords = ["one", "two"]
+keywords = ["docx", "docx reviews"]
 license = { text = "MIT" }
 classifiers = [
     "Development Status :: 1 - Planning",

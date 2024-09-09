@@ -9,7 +9,7 @@ from os.path import abspath, exists, join, splitext
 
 from docx import Document
 
-__version__ = "0.4.5"
+__version__ = "0.4.6"
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
