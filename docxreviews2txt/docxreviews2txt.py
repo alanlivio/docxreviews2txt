@@ -7,9 +7,9 @@ import tempfile
 import xml.etree.ElementTree as ET
 from os.path import abspath, exists, join, splitext
 
+from .version import __version__
 from docx import Document
 
-__version__ = "0.4.6"
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
@@ -43,6 +43,7 @@ def str_surround_ins(txt) -> str:
 def str_surround_del(txt) -> str:
     return DEL_BEGIN + txt + DEL_END
 
+
 def _get_left_txt(root, index) -> str:
     res = ""
     while index > 0:
@@ -51,21 +52,23 @@ def _get_left_txt(root, index) -> str:
             break
         text_s = str_from_t_elems(elem)
         res = text_s + res
-        index =-1
+        index = -1
     return res
 
-def _get_right_txt(root, index, limit) -> tuple[str,bool]:
+
+def _get_right_txt(root, index, limit) -> tuple[str, bool]:
     res = ""
     change_ahead = False
     while index < limit:
         elem = root[index]
         if elem.tag == ET_DEL or elem.tag == ET_INS:
-            change_ahead=True
+            change_ahead = True
             break
         text_s = str_from_t_elems(elem)
         res = res + text_s
-        index +=1
-    return res,change_ahead
+        index += 1
+    return res, change_ahead
+
 
 def _get_tagged_change(root, index) -> str:
     elem = root[index]
@@ -77,6 +80,7 @@ def _get_tagged_change(root, index) -> str:
         return str_surround_ins(string) if string else ""
     else:
         return "<error>"
+
 
 class DocxReviews:
     def __init__(self, file_docx) -> None:
@@ -94,13 +98,14 @@ class DocxReviews:
             # at windows, shutil.copy fail if docx opened and only can be copied from powershell
             if os.name == "nt":
                 cmd = f"Copy-Item {file_docx} {self.target_file}"
-                subprocess.run(["powershell", "-noprofile", "-Command", cmd], capture_output=True, check=True)
+                subprocess.run(
+                    ["powershell", "-noprofile", "-Command", cmd], capture_output=True, check=True
+                )
             else:
                 raise exc
         assert exists(self.target_file)
         self.paragraphs = Document(self.target_file).paragraphs
 
-        
     def _parse(self) -> None:
         self.reviews.append("Typos suggestions using HTML tags <ins> and <del>:")
         for p in self.paragraphs:
@@ -113,25 +118,29 @@ class DocxReviews:
             index = 0
             left, right, result = "", "", ""
             change_ahead = False
-            while index < limit: 
+            while index < limit:
                 if root[index].tag == ET_DEL or root[index].tag == ET_INS:
                     # if not consecutive change, save left txt and change on result
                     if not change_ahead:
-                        left = _get_left_txt(root, index-1)
+                        left = _get_left_txt(root, index - 1)
                         if len(left.split()) > NWORDS_AROUND:
-                            left = " ".join(left.split()[-NWORDS_AROUND:]) + (" " if left[-1] == " " else "")
+                            left = " ".join(left.split()[-NWORDS_AROUND:]) + (
+                                " " if left[-1] == " " else ""
+                            )
                         result = left + result
                     result = result + _get_tagged_change(root, index)
                     # look ahead
-                    right, change_ahead = _get_right_txt(root, index+1, limit)
+                    right, change_ahead = _get_right_txt(root, index + 1, limit)
                     right_len = len(right.split())
                     # if change_ahead near, concatenate result
                     if change_ahead and right_len < NWORDS_AROUND:
-                        index+=1
+                        index += 1
                         continue
                     # if change_ahead far, finish result
                     elif change_ahead and right_len > NWORDS_AROUND:
-                        right = (" " if right[0] == " " else "") + " ".join(right.split()[:NWORDS_AROUND])
+                        right = (" " if right[0] == " " else "") + " ".join(
+                            right.split()[:NWORDS_AROUND]
+                        )
                         result = result + right
                         self.reviews.append("- " + result)
                         left, right, result = "", "", ""
@@ -139,12 +148,14 @@ class DocxReviews:
                     # if no change_ahead, finish result
                     if not change_ahead and result:
                         if right_len > NWORDS_AROUND:
-                            right = (" " if right[0] == " " else "") + " ".join(right.split()[:NWORDS_AROUND])
+                            right = (" " if right[0] == " " else "") + " ".join(
+                                right.split()[:NWORDS_AROUND]
+                            )
                         result = result + right
                         self.reviews.append("- " + result)
                         left, right, result = "", "", ""
                         change_ahead = False
-                index+=1
+                index += 1
 
     def save_reviews(self) -> None:
         if not self.reviews:

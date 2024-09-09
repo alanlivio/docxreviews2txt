@@ -29,7 +29,7 @@ docxreviews2txt = "docxreviews2txt.__main__:main"
 packages = ["docxreviews2txt"]
 
 [tool.setuptools.dynamic]
-version = { attr = "docxreviews2txt.__version__" }
+version = { attr = "docxreviews2txt.version.__version__" }
 
 [tool.isort]
 profile = "black"

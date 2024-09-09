@@ -1,7 +1,7 @@
 from docxreviews2txt import docxreviews_cli
 
 
-def main() -> None:  # to be call from setupy entry_point
+def main() -> None:  # used from script defined in pyproject.toml
     docxreviews_cli()
 
 
