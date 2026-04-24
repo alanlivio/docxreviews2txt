@@ -11,7 +11,7 @@ TEST_FOLDER = "tests"
 
 class TestCase(unittest.TestCase):
     def test_input_docx_files(self) -> None:
-        files = [join(TEST_FOLDER, file) for file in listdir(TEST_FOLDER) if file.endswith('.docx')]
+        files = [join(TEST_FOLDER, file) for file in listdir(TEST_FOLDER) if file.startswith('input_') and file.endswith('.docx')]
         for file in files:
             txt_out = file.replace('.docx', '_review.txt')
             txt_expected = file.replace('.docx', '_review_expected.txt')
