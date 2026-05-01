@@ -1,0 +1,4 @@
+- carried out on evaluating video quality in -> carried out when evaluating video quality in
+- the ethics commission of University was obtained ahead -> the ethics commission of the University was obtained ahead
+- combinations with corresponding 95% confident intervals for each -> combinations with corresponding 95% confidence intervals for each
+- could then be optimize further video encoding. -> could then be optimized for further video encoding.

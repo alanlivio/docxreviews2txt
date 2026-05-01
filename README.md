@@ -11,19 +11,20 @@ pip install docxreviews2txt
 ## How to use it?
 
 ```txt
-usage: docxreviews2txt [-h] [--version] docx
+usage: docxreviews2txt [-h] [--format {diff,tags}] [--version] docx
 
-Command line tool to extract review changes from a docx file as plain text using HTML tags <ins> and <del>.
+Command line tool to extract review changes from a docx file as plain text.
 
 positional arguments:
-  docx        input docx
+  docx                  input docx
 
 options:
-  -h, --help  show this help message and exit
-  --version   show version
+  -h, --help            show this help message and exit
+  --format {diff,tags}  output format: 'diff' (PREVIOUS -> AFTER) or 'tags' (<ins>/<del>). Default is 'diff'.
+  --version             show version
 ```
 
-Example:
+Example (Default format: `diff`):
 
 ```txt
 $ docxreviews2txt tests/lorem_ipsum.docx
@@ -31,12 +32,22 @@ txt reviews at file:///home/alan/src/docxreviews2txt/tests/lorem_ipsum_review.tx
 ```
 
 ```txt
-$ cat /home/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
-Typos suggestions using HTML tags <ins> and <del>:
-- dolor sit amet, consectetur <ins>Lorem ipsum</ins><del>adipiscing</del>
-- sit amet, consectetur adipiscing<ins>s</ins> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim <ins>do</ins>
-- Ut enim ad minim <ins>Lorem</ins>veniam<ins>ipsum</ins>
-- dolor sit amet, consectetur <del>adipiscing</del>
+$ cat tests/lorem_ipsum_review.txt
+- dolor sit amet, consectetur adipiscing elit, sed do eiusmod -> dolor sit amet, consectetur Lorem ipsum elit, sed do eiusmod
+- sit amet, consectetur adipiscing elit, sed do eiusmod -> sit amet, consectetur adipiscings elit, sed do eiusmod
+```
+
+Example (Tags format):
+
+```txt
+$ docxreviews2txt --format tags tests/lorem_ipsum.docx
+txt reviews at file:///home/alan/src/docxreviews2txt/tests/lorem_ipsum_review.txt
+```
+
+```txt
+$ cat tests/lorem_ipsum_review.txt
+- dolor sit amet, consectetur <ins>Lorem ipsum</ins><del>adipiscing</del> elit, sed do eiusmod
+- sit amet, consectetur adipiscing<ins>s</ins> elit, sed do eiusmod
 ```
 
 ## Known issues

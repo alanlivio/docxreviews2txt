@@ -4,7 +4,7 @@ from docxreviews2txt.docxreviews2txt import ChangeDetector, NS_MAP
 from docx.oxml.ns import qn
 
 def test_single_insertion():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Hello </w:t></w:r>
@@ -17,7 +17,7 @@ def test_single_insertion():
     assert changes == ["Hello <ins>beautiful </ins>world"]
 
 def test_single_deletion():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Hello </w:t></w:r>
@@ -30,7 +30,7 @@ def test_single_deletion():
     assert changes == ["Hello <del>old </del>world"]
 
 def test_consecutive_changes():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Start </w:t></w:r>
@@ -44,7 +44,7 @@ def test_consecutive_changes():
     assert changes == ["Start <ins>ins1 </ins><del>del1 </del>End"]
 
 def test_near_changes_grouping():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Very long sentence before. </w:t></w:r>
@@ -62,7 +62,7 @@ def test_near_changes_grouping():
     assert changes == ["before. Context <ins>ins1 </ins>mid <del>del1 </del>Context Very"]
 
 def test_far_changes_no_grouping():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Start </w:t></w:r>
@@ -79,7 +79,7 @@ def test_far_changes_no_grouping():
     assert changes[1] == "word3 word4 <del>del1 </del>End"
 
 def test_formatting_change_run():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Normal </w:t></w:r>
@@ -95,7 +95,7 @@ def test_formatting_change_run():
     assert changes == ["Normal [fmt]Formatted text"]
 
 def test_formatting_change_para():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:pPr>
@@ -109,7 +109,7 @@ def test_formatting_change_para():
     assert changes == ["[para fmt]This paragraph"]
 
 def test_change_at_start():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:ins><w:r><w:t>Added </w:t></w:r></w:ins>
@@ -121,7 +121,7 @@ def test_change_at_start():
     assert changes == ["<ins>Added </ins>at the"]
 
 def test_change_at_end():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Something at the </w:t></w:r>
@@ -133,7 +133,7 @@ def test_change_at_end():
     assert changes == ["at the <del>end.</del>"]
 
 def test_very_short_para():
-    detector = ChangeDetector(n_words_around=5)
+    detector = ChangeDetector(output_format='tags', n_words_around=5)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Hi </w:t></w:r>
@@ -146,7 +146,7 @@ def test_very_short_para():
     assert changes == ["Hi <ins>there </ins>!"]
 
 def test_empty_ins():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Before </w:t></w:r>
@@ -160,7 +160,7 @@ def test_empty_ins():
     assert changes == []
 
 def test_multiple_changes_in_para():
-    detector = ChangeDetector(n_words_around=2)
+    detector = ChangeDetector(output_format='tags', n_words_around=2)
     xml = f"""
     <w:p xmlns:w="{NS_MAP['w']}">
         <w:r><w:t>Word1 </w:t></w:r>

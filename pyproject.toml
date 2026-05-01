@@ -19,9 +19,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
 ]
-dependencies = [
-    "python-docx>=1.1.2", 
-]
+dependencies = ["python-docx>=1.1.2"]
 dynamic = ["version"]
 
 [project.scripts]

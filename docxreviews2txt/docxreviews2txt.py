@@ -20,8 +20,9 @@ NWORDS_AROUND = 4
 from docx.oxml.ns import qn
 
 class ChangeDetector:
-    def __init__(self, n_words_around=NWORDS_AROUND):
+    def __init__(self, n_words_around=NWORDS_AROUND, output_format='diff'):
         self.n_words_around = n_words_around
+        self.output_format = output_format
 
     def get_text(self, element):
         """Extracts text from w:t and w:delText elements within the given element."""
@@ -141,17 +142,6 @@ class ChangeDetector:
                 if segments[start_idx - 1][1].endswith(" ") and left_context:
                     left_context += " "
             
-            # Middle content (the changes)
-            change_content = ""
-            for j in range(start_idx, end_idx + 1):
-                seg_type, content = segments[j]
-                if seg_type == 'ins':
-                    change_content += INS_BEGIN + content + INS_END
-                elif seg_type == 'del':
-                    change_content += DEL_BEGIN + content + DEL_END
-                else:
-                    change_content += content
-            
             # Right context
             right_context = ""
             if end_idx + 1 < len(segments) and segments[end_idx + 1][0] == 'text':
@@ -160,8 +150,35 @@ class ChangeDetector:
                 right_context = " ".join(context_words)
                 if segments[end_idx + 1][1].startswith(" ") and right_context:
                     right_context = " " + right_context
-            
-            processed_changes.append(left_context + change_content + right_context)
+
+            if self.output_format == 'tags':
+                # Middle content (the changes)
+                change_content = ""
+                for j in range(start_idx, end_idx + 1):
+                    seg_type, content = segments[j]
+                    if seg_type == 'ins':
+                        change_content += INS_BEGIN + content + INS_END
+                    elif seg_type == 'del':
+                        change_content += DEL_BEGIN + content + DEL_END
+                    else:
+                        change_content += content
+                processed_changes.append(left_context + change_content + right_context)
+            else: # diff format
+                prev_middle = ""
+                after_middle = ""
+                for j in range(start_idx, end_idx + 1):
+                    seg_type, content = segments[j]
+                    if seg_type == 'ins':
+                        after_middle += content
+                    elif seg_type == 'del':
+                        prev_middle += content
+                    else:
+                        prev_middle += content
+                        after_middle += content
+                
+                change_str = f"{left_context}{prev_middle}{right_context} -> {left_context}{after_middle}{right_context}"
+                processed_changes.append(change_str)
+
             i = end_idx + 1
             
         return processed_changes
@@ -169,10 +186,11 @@ class ChangeDetector:
 
 
 class DocxReviews:
-    def __init__(self, file_docx) -> None:
+    def __init__(self, file_docx, output_format='diff') -> None:
         assert exists(file_docx)
         self.reviews = []
         self.file_docx = abspath(file_docx)
+        self.output_format = output_format
         # use tmp file
         self.target_file = join(tempfile.gettempdir(), "docx_reviews_to_txt.docx")
         if exists(self.target_file):
@@ -213,8 +231,7 @@ class DocxReviews:
         return comments
 
     def _parse(self) -> None:
-        self.reviews.append("Typos suggestions using HTML tags <ins> and <del>:")
-        detector = ChangeDetector()
+        detector = ChangeDetector(output_format=self.output_format)
         
         doc = Document(self.target_file)
         for p in doc.paragraphs:
@@ -291,8 +308,14 @@ def docxreviews_cli(argv=None) -> None:
     )
     parser.add_argument("docx", help="input docx", type=pathlib.Path)
     parser.add_argument(
+        "--format",
+        help="output format: 'diff' (PREVIOUS -> AFTER) or 'tags' (<ins>/<del>). Default is 'diff'.",
+        choices=["diff", "tags"],
+        default="diff",
+    )
+    parser.add_argument(
         "--version", help="show version", action="version", version="%(prog)s " + __version__
     )
     args = parser.parse_args(argv)
-    docx_reviews = DocxReviews(file_docx=args.docx)
+    docx_reviews = DocxReviews(file_docx=args.docx, output_format=args.format)
     docx_reviews.save_reviews()
