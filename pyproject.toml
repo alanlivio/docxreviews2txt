@@ -35,8 +35,11 @@ packages = ["docxreviews2txt"]
 [tool.setuptools.dynamic]
 version = { attr = "docxreviews2txt.version.__version__" }
 
-[tool.isort]
-profile = "black"
-
 [tool.black]
+extend-exclude = '.*compiler_error.*'
 line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+norecursedirs = ["output", "build", "dist", ".venv", ".*"]
