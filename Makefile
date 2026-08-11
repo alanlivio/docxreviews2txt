@@ -12,16 +12,14 @@ test:
 build:
 	python -m build . --wheel
 
-publish-pypi-check:
-	pip install build setuptools twine
-	[[ -d dist ]] && rm -r dist || true
-	[[ -d build ]] && rm -r build || true
-	rm -rf ./*.egg-info
-	python -m build . --wheel
-	twine check dist/*
-
-publish-pypi: publish-pypi-check
-	twine upload dist/*
-
 clean:
 	rm -rf dist build ./*.egg-info .pytest_cache
+
+wheel:
+	$(VENV)/bin/pip install build setuptools twine
+	rm -rf dist build ./*.egg-info
+	$(VENV)/bin/python -m build . --wheel
+	$(VENV)/bin/twine check dist/*
+
+publish-pypi: wheel
+	twine upload dist/*
