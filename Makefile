@@ -1,10 +1,23 @@
-.PHONY: deps test build publish-pypi clean
+MAKEFLAGS += -s --no-print-directory
+.DEFAULT_GOAL := help
 
-SHELL := /bin/bash
+.PHONY: help deps test build clean wheel publish-pypi
+
+help:
+	@printf "%s\n" \
+		"Usage: make [target]" \
+		"" \
+		"Targets:" \
+		"  deps          Install dependencies" \
+		"  test          Run tests" \
+		"  build         Build wheel" \
+		"  wheel         Build and check wheel" \
+		"  publish-pypi  Publish wheel to PyPI" \
+		"  clean         Clean build artifacts"
 
 deps:
-	pip install -e .
-	pip install pytest build twine setuptools
+	pip install --upgrade pip
+	pip install -r requirements.txt -r requirements-dev.txt
 
 test:
 	pytest
@@ -16,10 +29,12 @@ clean:
 	rm -rf dist build ./*.egg-info .pytest_cache
 
 wheel:
-	$(VENV)/bin/pip install build setuptools twine
+	pip install -r requirements-dev.txt
 	rm -rf dist build ./*.egg-info
-	$(VENV)/bin/python -m build . --wheel
-	$(VENV)/bin/twine check dist/*
+	python -m build . --wheel
+	twine check dist/*
 
 publish-pypi: wheel
 	twine upload dist/*
+
+

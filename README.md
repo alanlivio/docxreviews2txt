@@ -2,13 +2,11 @@
 
 Command line tool to extract review changes from a docx file as plain text. It is useful when reviewing a PDF file as docx, and you need to share the changes as plain text.
 
-## How to install?
+## Usage
 
 ```bash
 pip install docxreviews2txt
 ```
-
-## How to use it?
 
 ```txt
 usage: docxreviews2txt [-h] [--format {diff,tags}] [--version] docx
