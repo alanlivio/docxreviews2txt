@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
+from lxml import etree
 from os.path import abspath, exists, join, splitext
 
 from .version import __version__

@@ -3,7 +3,7 @@ MAKEFLAGS += -s --no-print-directory
 
 GLOBAL_PYTHON ?= $(shell if [ -x /usr/bin/python3 ]; then echo /usr/bin/python3; else echo python3; fi)
 
-.PHONY: help deps test build clean wheel install-global publish-pypi
+.PHONY: help deps run test build clean wheel install-global publish-pypi
 
 help:
 	@printf "%s\n" \
@@ -11,6 +11,7 @@ help:
 		"" \
 		"Targets:" \
 		"  deps            Install dependencies" \
+		"  run             Run extraction on sample docx (or FILE=<path>)" \
 		"  test            Run tests" \
 		"  build           Build wheel" \
 		"  clean           Clean build artifacts" \
@@ -20,7 +21,12 @@ help:
 
 deps:
 	pip install --upgrade pip
-	pip install -r requirements.txt -r requirements-dev.txt
+	pip install -e .[dev]
+
+FILE ?= tests/input_1.docx
+
+run:
+	python -m docxreviews2txt $(FILE)
 
 test:
 	pytest
@@ -32,7 +38,7 @@ clean:
 	rm -rf dist build ./*.egg-info .pytest_cache
 
 wheel:
-	pip install -r requirements-dev.txt
+	pip install -e .[dev]
 	rm -rf dist build ./*.egg-info
 	python -m build . --wheel
 	twine check dist/*
@@ -42,5 +48,3 @@ install-global: wheel
 
 publish-pypi: wheel
 	twine upload dist/*
-
-
