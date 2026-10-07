@@ -4,21 +4,18 @@ import pathlib
 import shutil
 import subprocess
 import tempfile
-import xml.etree.ElementTree as ET
-from lxml import etree
 from os.path import abspath, exists, join, splitext
 
-from .version import __version__
 from docx import Document
+from docx.oxml import parse_xml
+from docx.oxml.ns import qn
+from .version import __version__
 
 
 WORD_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_MAP = {"w": WORD_NS}
 INS_BEGIN, INS_END, DEL_BEGIN, DEL_END = "<ins>", "</ins>", "<del>", "</del>"
 NWORDS_AROUND = 4
-
-
-from docx.oxml.ns import qn
 
 class ChangeDetector:
     def __init__(self, n_words_around=NWORDS_AROUND, output_format='diff'):
@@ -217,11 +214,11 @@ class DocxReviews:
             # Find the comments part
             for rel in doc.part.rels.values():
                 if "comments" in rel.target_ref:
-                    root = etree.fromstring(rel.target_part.blob)
-                    for comment in root.xpath("//w:comment", namespaces=NS_MAP):
+                    root = parse_xml(rel.target_part.blob)
+                    for comment in root.xpath("//w:comment"):
                         author = comment.get(qn("w:author"), "Unknown")
                         text_parts = []
-                        for t in comment.xpath(".//w:t", namespaces=NS_MAP):
+                        for t in comment.xpath(".//w:t"):
                             if t.text:
                                 text_parts.append(t.text)
                         text = "".join(text_parts)
