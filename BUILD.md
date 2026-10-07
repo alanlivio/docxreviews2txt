@@ -27,23 +27,23 @@ make deps
 Run directly using Python module execution without installing globally:
 
 ```bash
-python -m docxreviews2txt tests/input_1.docx
+python -m docxreviews2txt tests/sample_1/input.docx
 ```
 
 Or run the CLI command directly when installed in editable mode:
 
 ```bash
-docxreviews2txt tests/input_1.docx
+docxreviews2txt tests/sample_1/input.docx
 ```
 
 Specify output formats (`diff` or `tags`):
 
 ```bash
 # Output with PREVIOUS -> AFTER diff style (default)
-docxreviews2txt --format diff tests/input_1.docx
+docxreviews2txt --format diff tests/sample_1/input.docx
 
 # Output with <ins> and <del> tags
-docxreviews2txt --format tags tests/input_1.docx
+docxreviews2txt --format tags tests/sample_1/input.docx
 ```
 
 Display help and usage details:

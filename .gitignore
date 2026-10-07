@@ -164,6 +164,8 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 tests/*_review.txt
+tests/*/*_review.txt
+tests/**/*_review.txt
 typings/
 ~$*
 tests/~$*

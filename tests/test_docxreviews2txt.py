@@ -7,9 +7,9 @@ from docxreviews2txt.docxreviews2txt import DocxReviews
 TEST_FOLDER = "tests"
 
 INPUT_FILES = [
-    join(TEST_FOLDER, file)
-    for file in sorted(listdir(TEST_FOLDER))
-    if file.startswith("input_") and file.endswith(".docx")
+    join(TEST_FOLDER, d, "input.docx")
+    for d in sorted(listdir(TEST_FOLDER))
+    if d.startswith("sample_") and exists(join(TEST_FOLDER, d, "input_review_diff_expected.txt"))
 ]
 
 

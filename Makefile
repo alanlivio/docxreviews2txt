@@ -23,7 +23,7 @@ deps:
 	pip install --upgrade pip
 	pip install -e .[dev]
 
-FILE ?= tests/input_1.docx
+FILE ?= tests/sample_1/input.docx
 
 run:
 	python -m docxreviews2txt $(FILE)
